@@ -25,12 +25,10 @@ package org.firstinspires.ftc.teamcode.OpenCv;
 import static org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive.getVelocityConstraint;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -46,8 +44,8 @@ import org.openftc.easyopencv.OpenCvInternalCamera;
 import java.util.ArrayList;
 import java.util.Locale;
 
-@Autonomous(name = "ENIGMA Autonomous", group = "00-Autonomous", preselectTeleOp = "ENIGMA TeleOp")
-public class testRRAuto extends LinearOpMode{
+@Autonomous(name = "ENIGMA TEST", group = "00-Autonomous", preselectTeleOp = "ENIGMA TeleOp")
+public class AutoRRtest extends LinearOpMode{
 
     //Define and declare Robot Starting Locations
     public enum START_POSITION{
@@ -83,11 +81,6 @@ public class testRRAuto extends LinearOpMode{
     private static final double BRAKE_ON = 0.28;
     // initialize drive hardware
     private static int lastDirection;
-
-    private DcMotor leftSlide;
-    private DcMotor rightSlide;
-    private static final double SLIDE_UP = 1;
-    private static final double SLIDE_DOWN = .25;
 
     //Magnetic Switches
     private RevTouchSensor slideMag;
@@ -130,14 +123,10 @@ public class testRRAuto extends LinearOpMode{
     {
 
         // initialize mech hardware
+
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         selectStartingPosition();
-        // Motors
-        leftSlide = hardwareMap.get(DcMotor.class, "leftSlide");
-        rightSlide = hardwareMap.get(DcMotor.class, "rightSlide");
-        leftSlide.setDirection(DcMotor.Direction.REVERSE);
-        rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         //Servos
         odoRetractor = hardwareMap.get(Servo.class, "odoRetractor");
         flipOut = hardwareMap.get(Servo.class, "flipOut");
@@ -313,8 +302,8 @@ public class testRRAuto extends LinearOpMode{
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         switch (startPosition) {
             case BLUE_LEFT:
-                initPose = new Pose2d(-61, 36, Math.toRadians(0)); //Starting pose // -54, 36, Math.toRadians(0)
-                midWayPose = new Pose2d(-24, 36, Math.toRadians(0)); //Choose the pose to move forward towards signal cone // -12, 36, Math.toRadians(0)
+                initPose = new Pose2d(0, 0, Math.toRadians(0)); //Starting pose // -54, 36, Math.toRadians(0)
+                midWayPose = new Pose2d(-12, 36, Math.toRadians(0)); //Choose the pose to move forward towards signal cone // -12, 36, Math.toRadians(0)
                 loadedConePose = new Pose2d(-12, 9, Math.toRadians(90)); //Choose the pose to move to the stack of cones
                 dropConePose0 = new Pose2d(-12, 12, Math.toRadians(225)); //Choose the pose to move to the stack of cones
                 dropConePose1 = new Pose2d(-11, 12, Math.toRadians(225)); //Choose the pose to move to the stack of cones
@@ -347,44 +336,40 @@ public class testRRAuto extends LinearOpMode{
         }
 
         //Drop Preloaded Cone, Pick 5 cones and park
-        trajectoryAuto = drive.trajectorySequenceBuilder(new Pose2d())
-                .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_OUT))
-                .forward(22).UNSTABLE_addTemporalMarkerOffset(-0.2, () -> slideUp()) // FLip out claw linkage
-                .waitSeconds(0.1)
-                .strafeLeft(35)
-                .waitSeconds(0.5)
-                .addTemporalMarker(() -> dropThatCone())
-                .strafeLeft(12).UNSTABLE_addTemporalMarkerOffset(-0.2, () -> slideDown())
+        trajectoryAuto = drive.trajectorySequenceBuilder(initPose)
 
+
+                //.lineToLinearHeading(midWayPose)
                 //Uncomment following line to slow down turn if needed.
-               // .setVelConstraint(getVelocityConstraint(30 /* Slower Velocity*/, 15 /*Slower Angular Velocity*/, DriveConstants.TRACK_WIDTH))
-               // .lineToLinearHeading(dropConePose0)
-               // .addDisplacementMarker(() -> {
-               //     dropCone(0); //Drop preloaded Cone
+                //.strafeRight(49)
+                // .setVelConstraint(getVelocityConstraint(30 /* Slower Velocity*/, 15 /*Slower Angular Velocity*/, DriveConstants.TRACK_WIDTH))
+                // .lineToLinearHeading(dropConePose0)
+                // .addDisplacementMarker(() -> {
+                //     dropCone(0); //Drop preloaded Cone
                 //})
                 //Uncomment following line to stop reduction in speed. And move to the position after which you want to stop reducing speed.
                 //.resetVelConstraint()
-             //   .lineToLinearHeading(midWayPose)
-             ///   .lineToLinearHeading(pickConePose)
-             //   .addDisplacementMarker(() -> {
-             //       pickCone(1); //Pick top cone from stack
-             //   })
-             //   .lineToLinearHeading(midWayPose)
-             //   .lineToLinearHeading(dropConePose1)
-             //   .addDisplacementMarker(() -> {
-             //       dropCone(1); //Drop cone on junction
-             //   })
-             //   .lineToLinearHeading(midWayPose)
-             //   .lineToLinearHeading(pickConePose)
-             //   .addDisplacementMarker(() -> {
-             //       pickCone(2); //Pick second cone from stack
-             //   })
-             //   .lineToLinearHeading(midWayPose)
-             //   .lineToLinearHeading(dropConePose2)
-             //   .addDisplacementMarker(() -> {
-             //       dropCone(2); //Drop cone on junction
-             //   })
-             //   .lineToLinearHeading(midWayPose)
+                //   .lineToLinearHeading(midWayPose)
+                ///   .lineToLinearHeading(pickConePose)
+                //   .addDisplacementMarker(() -> {
+                //       pickCone(1); //Pick top cone from stack
+                //   })
+                //   .lineToLinearHeading(midWayPose)
+                //   .lineToLinearHeading(dropConePose1)
+                //   .addDisplacementMarker(() -> {
+                //       dropCone(1); //Drop cone on junction
+                //   })
+                //   .lineToLinearHeading(midWayPose)
+                //   .lineToLinearHeading(pickConePose)
+                //   .addDisplacementMarker(() -> {
+                //       pickCone(2); //Pick second cone from stack
+                //   })
+                //   .lineToLinearHeading(midWayPose)
+                //   .lineToLinearHeading(dropConePose2)
+                //   .addDisplacementMarker(() -> {
+                //       dropCone(2); //Drop cone on junction
+                //   })
+                //   .lineToLinearHeading(midWayPose)
                 .build();
     }
     //Build parking trajectory based on target detected by vision
@@ -422,8 +407,8 @@ public class testRRAuto extends LinearOpMode{
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         telemetry.addData("Picked Cone: Stack", DetectedTag);
         // trajectoryParking = drive.trajectorySequenceBuilder(midWayPose)
-       //         .lineToLinearHeading(parkPose)
-       //         .build();
+        //         .lineToLinearHeading(parkPose)
+        //         .build();
     }
     //Run Auto trajectory and parking trajectory
     public void runAutoAndParking(){
@@ -435,8 +420,6 @@ public class testRRAuto extends LinearOpMode{
         //Run the trajectory built for Auto and Parking
         drive.followTrajectorySequence(trajectoryAuto);
         //drive.followTrajectorySequence(trajectoryParking);
-
-
     }
 
     //Write a method which is able to pick the cone from the stack depending on your subsystems
@@ -459,18 +442,7 @@ public class testRRAuto extends LinearOpMode{
         }
         telemetry.update();
     }
-    public void slideUp(){
-        rightSlide.setPower(SLIDE_UP);
-        leftSlide.setPower(SLIDE_UP);
-    }
-    public void slideDown(){
-        rightSlide.setPower(SLIDE_DOWN);
-        leftSlide.setPower(SLIDE_DOWN);
-    }
-    public void dropThatCone(){
-        claw.setPosition(CLAW_OPEN);
-        finger.setPosition(FINGER_UP);
-    }
+
     public void parkingComplete(){
 
         telemetry.addData("Parked in Location", tagOfInterest.id);
