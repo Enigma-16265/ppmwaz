@@ -203,12 +203,12 @@ public class OdoMec extends LinearOpMode {
             double motorVerticalLiftRightPower = -gamepad2.left_stick_y;
             double motorVerticalLiftLeftPower = -gamepad2.left_stick_y;
 
-            if (!slideMag.isPressed()) {
-                motorVerticalLiftRightPower = Range.clip(motorVerticalLiftRightPower, -1, 1); // was 1
-                motorVerticalLiftLeftPower = Range.clip(motorVerticalLiftLeftPower, -1, 1); //-0.90, .93)
+            if (!slideMag.isPressed()) { // SLIDE_UP
+                motorVerticalLiftRightPower = Range.clip(motorVerticalLiftRightPower, -0.25, 1); // was 1
+                motorVerticalLiftLeftPower = Range.clip(motorVerticalLiftLeftPower, -0.25, 1); //-0.90, .93)
                 rightSlide.setPower(motorVerticalLiftRightPower);
                 leftSlide.setPower(motorVerticalLiftLeftPower);
-            } else {
+            } else { // SLIDE_DOWN
                 motorVerticalLiftRightPower = Range.clip(motorVerticalLiftRightPower, 0, 1);// 1
                 motorVerticalLiftLeftPower = Range.clip(motorVerticalLiftLeftPower, 0, 1);// .93
                 rightSlide.setPower(motorVerticalLiftRightPower);
@@ -234,7 +234,7 @@ public class OdoMec extends LinearOpMode {
             } else if (gamepad2.right_bumper && gamepad2.x) {
                 clawLinkage.setPosition(0.87);
             } else if (gamepad2.left_bumper) {
-                clawLinkage.setPosition(0.53);
+                clawLinkage.setPosition(CLAW_LINKAGE_FIVE); // 0.53
             }
 
             telemetry.addData("Servo",clawLinkage.getPosition());
