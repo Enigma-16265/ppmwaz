@@ -46,7 +46,7 @@ import org.openftc.easyopencv.OpenCvInternalCamera;
 import java.util.ArrayList;
 import java.util.Locale;
 
-@Autonomous(name = "AutoENIGMA", group = "00-Autonomous", preselectTeleOp = "Mike Wazowski")
+@Autonomous(name = "ENIGMA Autonomous", group = "00-Autonomous", preselectTeleOp = "Mike Wazowski")
 public class AutoRRtest extends LinearOpMode{
 
     //Define and declare Robot Starting Locations
@@ -74,10 +74,10 @@ public class AutoRRtest extends LinearOpMode{
     private static final double CLAW_OPEN = 0.2;
     private Servo clawLinkage;
     private static final double CLAW_LINKAGE_FIVE = 0.53;
-    private static final double CLAW_LINKAGE_FOUR = 0.25;
-    private static final double CLAW_LINKAGE_THREE = 0.45;
-    private static final double CLAW_LINKAGE_TWO = 0.65;
-    private static final double CLAW_LINKAGE_ONE = 0.85;
+    private static final double CLAW_LINKAGE_FOUR = 0.63;
+    private static final double CLAW_LINKAGE_THREE = 0.7;
+    private static final double CLAW_LINKAGE_TWO = 0.78;
+    private static final double CLAW_LINKAGE_ONE = 0.87;
     private Servo brake;
     private static final double BRAKE_OFF = 0.16;
     private static final double BRAKE_ON = 0.28;
@@ -86,10 +86,11 @@ public class AutoRRtest extends LinearOpMode{
 
     private DcMotor leftSlide;
     private DcMotor rightSlide;
-    private static final double SLIDE_UP_TALL_JUNCTION = 1;
+    private static final double SLIDE_UP_TOP = 1;
+    private static final double SLIDE_UP_TALL_JUNCTION = .83;
     private static final double SLIDE_UP_MED_JUNCTION = .75;
     private static final double SLIDE_UP_SM_JUNCTION = .5;
-    private static final double SLIDE_DOWN = .25;
+    private static final double SLIDE_DOWN = -.1;
 
     //Magnetic Switches
     private RevTouchSensor slideMag;
@@ -156,11 +157,14 @@ public class AutoRRtest extends LinearOpMode{
         distance = hardwareMap.get(DistanceSensor.class, "Distance");
 
         //Set servo positions
+        odoRetractor.setPosition(0.3);
         flipOut.setPosition(FLIPPED_IN);
         clawLinkage.setPosition(CLAW_LINKAGE_FIVE);
         claw.setPosition(CLAW_CLOSED);
         brake.setPosition(BRAKE_OFF);
         finger.setPosition(FINGER_DOWN);
+
+        initPose = new Pose2d();
         // Vision OpenCV / Apriltags
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
@@ -304,11 +308,6 @@ public class AutoRRtest extends LinearOpMode{
 
     //Initialize any other Pose2d's as desired
     Pose2d initPose; // Starting Pose
-    Pose2d midWayPose;
-    Pose2d pickConePose;
-    Pose2d loadedConePose;
-    Pose2d dropConePose0, dropConePose1, dropConePose2;
-    Pose2d parkPose;
 
     //Set all position based on selected staring location and Build Autonomous Trajectory
     public void buildAuto() {
@@ -316,14 +315,20 @@ public class AutoRRtest extends LinearOpMode{
         switch (startPosition) {
             case BLUE_LEFT:
                 trajectoryAuto = drive.trajectorySequenceBuilder(new Pose2d())
+                        .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // flip out claw linkage slide
                         .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_OUT)) // flip out claw linkage slide
                         .forward(22).UNSTABLE_addTemporalMarkerOffset(-0.2, () -> slideUpTall()) // move .forward(??) inches and raise the lift all the way up
                         .waitSeconds(0.1) // pause (??) microsec
                         .strafeLeft(35) // .strafeLeft(??) inches
                         .waitSeconds(0.5) // pause (??) a microsec to allow the lift to go all the way up
                         .addTemporalMarker(() -> dropCone(0)) // drop the cone
-                        .strafeLeft(12).UNSTABLE_addTemporalMarkerOffset(-0.2, () -> slideDown()) //.strafeLeft(??) inches to be in line with cone stack and lower the lift all the way down
+                        //.strafeLeft(12).UNSTABLE_addTemporalMarkerOffset(-0.1, () -> slideDown()) //.strafeLeft(??) inches to be in line with cone stack and lower the lift all the way down
+                        .strafeLeft(14)
+                        .addTemporalMarker(() -> slideDown())
+                        .waitSeconds(.5) // pause (??) a microsec to allow the lift to go all the way down
+                        .back(34)
                         .build();
+
                 break;
             case BLUE_RIGHT:
 

@@ -38,6 +38,8 @@ public class OdoMec extends LinearOpMode {
 
     //Servos
     private Servo odoRetractor;
+    private static final double ODO_RETRACT = .29; //.95
+    private static final double ODO_DOWN = .62;
     private Servo flipOut;
     private static final double FLIPPED_IN = .29; //.95
     private static final double FLIPPED_OUT = .62;
@@ -49,10 +51,10 @@ public class OdoMec extends LinearOpMode {
     private static final double CLAW_OPEN = 0.2;
     private Servo clawLinkage;
     private static final double CLAW_LINKAGE_FIVE = 0.53;
-    private static final double CLAW_LINKAGE_FOUR = 0.25;
-    private static final double CLAW_LINKAGE_THREE = 0.45;
-    private static final double CLAW_LINKAGE_TWO = 0.65;
-    private static final double CLAW_LINKAGE_ONE = 0.85;
+    private static final double CLAW_LINKAGE_FOUR = 0.63;
+    private static final double CLAW_LINKAGE_THREE = 0.7;
+    private static final double CLAW_LINKAGE_TWO = 0.78;
+    private static final double CLAW_LINKAGE_ONE = 0.87;
     private Servo brake;
     private static final double BRAKE_OFF = 0.16;
     private static final double BRAKE_ON = 0.28;
@@ -119,6 +121,7 @@ public class OdoMec extends LinearOpMode {
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        turret.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         verticalLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         verticalRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -140,6 +143,7 @@ public class OdoMec extends LinearOpMode {
 
 
         //Set servo positions
+
         flipOut.setPosition(FLIPPED_IN);
         clawLinkage.setPosition(CLAW_LINKAGE_FIVE);
         claw.setPosition(CLAW_OPEN);
@@ -170,7 +174,7 @@ public class OdoMec extends LinearOpMode {
             double rightRearPower = (forward + strafe - turn) / denominator;
             double leftRearPower = (forward - strafe + turn) / denominator;
 
-            if (gamepad1.right_bumper) {
+            if (gamepad1.right_trigger == 1) {
                 rightFrontPower = Range.clip(rightFrontPower, -0.4, 0.4);
                 leftFrontPower = Range.clip(leftFrontPower, -0.4, 0.4);
                 rightRearPower = Range.clip(rightRearPower, -0.4, 0.4);
@@ -216,30 +220,38 @@ public class OdoMec extends LinearOpMode {
             }
 
             // Turret Brake
-            if (gamepad2.dpad_down) {
+            if (gamepad2.right_trigger == 1) {
                 brake.setPosition(BRAKE_ON);
             } else {
                 brake.setPosition(BRAKE_OFF);
             }
 
+            if (gamepad1.left_bumper) {
+                clawLinkage.setPosition(CLAW_LINKAGE_FIVE); // 0.53 - 5 cones, ALl the way up
+            } else if (gamepad1.right_bumper) {
+                clawLinkage.setPosition(CLAW_LINKAGE_ONE); // 0.87 - 1 cone, ALl the way down
+            }
 
+            if (gamepad2.right_bumper && gamepad2.y) { // 0.63 - 4 cones
+                clawLinkage.setPosition(CLAW_LINKAGE_FOUR);
 
-            if (gamepad2.right_bumper && gamepad2.y) {
-                clawLinkage.setPosition(0.63);
-
-            } else if (gamepad2.right_bumper && gamepad2.b) {
-                clawLinkage.setPosition(0.7);
-            } else if (gamepad2.right_bumper && gamepad2.a) {
-                clawLinkage.setPosition(0.78);
-            } else if (gamepad2.right_bumper && gamepad2.x) {
-                clawLinkage.setPosition(0.87);
+            } else if (gamepad2.right_bumper && gamepad2.b) { // 0.7 - 3 cones
+                clawLinkage.setPosition(CLAW_LINKAGE_THREE);
+            } else if (gamepad2.right_bumper && gamepad2.a) { // 0.7 - 2 cones
+                clawLinkage.setPosition(CLAW_LINKAGE_TWO);
+            } else if (gamepad2.right_bumper && gamepad2.x) { // 0.87 1 cone, All the way down
+                clawLinkage.setPosition(CLAW_LINKAGE_ONE);
             } else if (gamepad2.left_bumper) {
-                clawLinkage.setPosition(CLAW_LINKAGE_FIVE); // 0.53
+                clawLinkage.setPosition(CLAW_LINKAGE_FIVE); // 0.53 - 5 cones, ALl the way up
             }
 
             telemetry.addData("Servo",clawLinkage.getPosition());
             telemetry.addData("TurretPos", turret.getCurrentPosition());
             telemetry.update();
+
+            if (gamepad1.a) {
+                odoRetractor.setPosition(0.7);
+            }
 
 
 
@@ -295,12 +307,12 @@ public class OdoMec extends LinearOpMode {
             }
 
              */
-            if (gamepad2.right_stick_x > 0) {
-                turret.setPower(Range.clip(gamepad2.right_stick_x + 0.1, 0, 0.6));
+            if (gamepad2.right_stick_x > 0) {                   // + 0.1
+                turret.setPower(Range.clip(gamepad2.right_stick_x, 0, 0.35));
                 lastDirection = 1;
             } else if (gamepad2.right_stick_x < 0) {
-                lastDirection = -1;
-                turret.setPower(Range.clip(gamepad2.right_stick_x - 0.1, -0.6, 0));
+                lastDirection = -1;                               // - 0.1
+                turret.setPower(Range.clip(gamepad2.right_stick_x, -0.35, 0));
             } else {
                 turret.setPower(0);
             }
