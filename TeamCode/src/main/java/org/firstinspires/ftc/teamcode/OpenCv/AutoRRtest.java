@@ -86,12 +86,18 @@ public class AutoRRtest extends LinearOpMode{
 
     private DcMotor leftSlide;
     private DcMotor rightSlide;
-    private static final double SLIDE_UP_TOP = 1;
-    private static final double SLIDE_UP_TALL_JUNCTION = .83;
-    private static final double SLIDE_UP_MED_JUNCTION = .5;
-    private static final double SLIDE_UP_SM_JUNCTION = .4;
-    private static final double SLIDE_UP_CONE = .25;
-    private static final double SLIDE_DOWN = -0.5;
+    private static final double POWER_FULL = 1;
+    private static final double POWER_NINETY = 0.9;
+    private static final double POWER_EIGHTY = 0.8;
+    private static final double POWER_SEVENTY = 0.7;
+    private static final double POWER_SIXTY = 0.6;
+    private static final double POWER_FIFTY = 0.5;
+    private static final double POWER_FORTY = 0.4;
+    private static final double POWER_THIRTY = 0.3;
+    private static final double POWER_TWENTY = 0.2;
+    private static final double POWER_TEN = 0.1;
+    private static final double POWER_FIVE = 0.05;
+    private static final double LIFT_DOWN = -0.5;
     private DcMotor turret;
 
     //Magnetic Switches
@@ -325,47 +331,46 @@ public class AutoRRtest extends LinearOpMode{
                         .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
                         .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_OUT)) // flip out claw linkage slide
                         .waitSeconds(0.2)
-                        //.forward(21)
-                        .forward(23.5) // move .forward(??) inches and raise the lift all the way up
-                        .waitSeconds(0.1) // pause (??) microsec
-                        .strafeLeft(36).UNSTABLE_addTemporalMarkerOffset(-0.5, () -> slideUpMed())// .strafeLeft(??) inches
+                        .forward(23.5) // move .forward(??) inches
+                        .waitSeconds(0.1) // pause (??) microseconds
+                        // UNSTABLE_addTemporalMarkerOffset(-0.5, () -> mechCallBack) NOTE: the first parameter "offset" if negative
+                        // is the amount of time the callback will preformed before the end of the trajectory it is attached to.
+                        .strafeLeft(36).UNSTABLE_addTemporalMarkerOffset(-0.5, () -> liftUp(POWER_EIGHTY))// .strafeLeft(??) inches lift up
                         .waitSeconds(0.2) // pause (??) a microsec to allow the lift to go all the way up
-                        .addTemporalMarker(() -> dropCone(0)) // drop the cone
-                        .waitSeconds(0.1)
+                        .addTemporalMarker(() -> dropCone(0)) // drop the cone, enter a count for each one
+                        .waitSeconds(0.1) // pause (??) microseconds
                         .strafeLeft(13).UNSTABLE_addTemporalMarkerOffset(-0.7, () -> slideDown())
-                        //.waitSeconds(0.1)
-                        //.addTemporalMarker(() -> slideDown())
-                        //.strafeLeft(13).UNSTABLE_addTemporalMarkerOffset(0.1, () -> slideDown()) //.strafeLeft(??) inches to be in line with cone stack and lower the lift all the way down
-                        //.strafeLeft(14)
-                        //.addTemporalMarker(() -> slideDown())
                         .waitSeconds(0.3) // pause (??) a microsec to allow the lift to go all the way down
                         .addTemporalMarker(() -> brake.setPosition(BRAKE_OFF)) // unlock turret
-                        .addTemporalMarker(() -> turnTurret(0.25,-727)) // turn turret
-                        //.addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // unlock turret
+                        // turnTurret(motor power,ticks))
+                        .addTemporalMarker(() -> turnTurret(0.25, (int) ticksToDegrees(180, Left))) // turn turret
                         .waitSeconds(0.2)
                         .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // unlock turret
                         .back(45)
                         .waitSeconds(0.2)
                         .addTemporalMarker(() -> pickCone(1))
                         .waitSeconds(0.3)
-                        .addTemporalMarker(() -> slideUp(SLIDE_UP_CONE))
-                        .waitSeconds(0.6)
+                        .addTemporalMarker(() -> liftUp(POWER_TWENTY))
+                        .waitSeconds(0.5)
                         .addTemporalMarker(() -> brake.setPosition(BRAKE_OFF)) // unlock turret
                         .waitSeconds(0.2)
-                        .addTemporalMarker(() -> turnTurret(0.25,780)) // turn turret
+                        //.addTemporalMarker(() -> turnTurret(0.25,780)) // turn turret
+                        .addTemporalMarker(() -> turnTurret(0.25, (int) ticksToDegrees(220, Right))) // turn turret
                         .waitSeconds(0.2)
-                        .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // unlock turret
+                        .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
                         .waitSeconds(0.2)
                         //.forward(20)
-                        .forward(54)
+                        .forward(54).UNSTABLE_addTemporalMarkerOffset(-0.5, () -> liftUp(POWER_EIGHTY))
                         //.forward(54).UNSTABLE_addTemporalMarkerOffset(0.1, () -> lift(0.5,650))
                         .waitSeconds(0.4) // pause (??) a microsec to allow the lift to go all the way up
-                        .addTemporalMarker(() -> dropCone(0)) // drop the cone
+                        .addTemporalMarker(() -> dropCone(1)) // drop the cone
                         .waitSeconds(0.2)
-
                         .addTemporalMarker(() -> brake.setPosition(BRAKE_OFF)) // unlock turret
-                        .addTemporalMarker(() -> turnTurret(0.25,-780)) // turn turret
-                        //.addTemporalMarker(() -> lift(0.1,0)) // turn turret
+                        .waitSeconds(0.2)
+                        .addTemporalMarker(() -> turnTurret(0.25,(int) ticksToDegrees(220, Left))) // turn turret
+                        .waitSeconds(0.2)
+                        .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                        .addTemporalMarker(() -> slideDown()) // lift down
                         .build();
 
 
@@ -383,7 +388,18 @@ public class AutoRRtest extends LinearOpMode{
 
         //Drop Preloaded Cone, Pick 5 cones and park
     }
-
+    // Motor Encoder Ticks to Degrees
+    public double ticksToDegrees(double degrees, int direction){
+        double turnNone = 0;
+        double equate = (degrees*2);
+        double eqout = (equate*2.0194);
+        if (direction == 1) { // turn left
+            return -eqout;
+        } else if (direction == 3) { // turn right
+            return eqout;
+        }
+        return turnNone;
+    }
     //drive turret
     public void turnTurret(double speed, int distance) {
 
@@ -411,7 +427,7 @@ public class AutoRRtest extends LinearOpMode{
     public void lift(double speed, int distance) {
 
         //leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-       // rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        // rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         leftSlide.setTargetPosition(distance);
         rightSlide.setTargetPosition(distance);
@@ -532,29 +548,16 @@ public class AutoRRtest extends LinearOpMode{
         }
         telemetry.update();
     }
-    public void grabCone(){
-        claw.setPosition(CLAW_CLOSED);
-        finger.setPosition(FINGER_DOWN);
+    // send the lift up by giving it a power parameter stored in CONSTANTS based on % as follows:
+    // POWER_FULL, POWER_NINETY, POWER_EIGHTY, POWER_SEVENTY, POWER_SIXTY, POWER_FIFTY, POWER_FORTY, POWER_THIRTY, POWER_TWENTY, POWER_TEN
+    public void liftUp(double motorPower){
+        rightSlide.setPower(motorPower);
+        leftSlide.setPower(motorPower);
     }
-    public void slideUp(double here){
-        rightSlide.setPower(here);
-        leftSlide.setPower(here);
-    }
-    public void slideUpTall(){
-        rightSlide.setPower(SLIDE_UP_TALL_JUNCTION);
-        leftSlide.setPower(SLIDE_UP_TALL_JUNCTION);
-    }
-    public void slideUpMed(){
-        rightSlide.setPower(SLIDE_UP_MED_JUNCTION);
-        leftSlide.setPower(SLIDE_UP_MED_JUNCTION);
-    }
-    public void slideUpSm(){
-        rightSlide.setPower(SLIDE_UP_SM_JUNCTION);
-        leftSlide.setPower(SLIDE_UP_SM_JUNCTION);
-    }
+
     public void slideDown(){
-        rightSlide.setPower(SLIDE_DOWN);
-        leftSlide.setPower(SLIDE_DOWN);
+        rightSlide.setPower(LIFT_DOWN);
+        leftSlide.setPower(LIFT_DOWN);
     }
     public void parkingComplete(){
 
@@ -594,34 +597,4 @@ public class AutoRRtest extends LinearOpMode{
         }
         telemetry.clearAll();
     }
-    /* Old Coordinate Trajectory Info */
-//Uncomment following line to slow down turn if needed.
-    // .setVelConstraint(getVelocityConstraint(30 /* Slower Velocity*/, 15 /*Slower Angular Velocity*/, DriveConstants.TRACK_WIDTH))
-    // .lineToLinearHeading(dropConePose0)
-    // .addDisplacementMarker(() -> {
-    //     dropCone(0); //Drop preloaded Cone
-    //})
-    //Uncomment following line to stop reduction in speed. And move to the position after which you want to stop reducing speed.
-    //.resetVelConstraint()
-    //   .lineToLinearHeading(midWayPose)
-    ///   .lineToLinearHeading(pickConePose)
-    //   .addDisplacementMarker(() -> {
-    //       pickCone(1); //Pick top cone from stack
-    //   })
-    //   .lineToLinearHeading(midWayPose)
-    //   .lineToLinearHeading(dropConePose1)
-    //   .addDisplacementMarker(() -> {
-    //       dropCone(1); //Drop cone on junction
-    //   })
-    //   .lineToLinearHeading(midWayPose)
-    //   .lineToLinearHeading(pickConePose)
-    //   .addDisplacementMarker(() -> {
-    //       pickCone(2); //Pick second cone from stack
-    //   })
-    //   .lineToLinearHeading(midWayPose)
-    //   .lineToLinearHeading(dropConePose2)
-    //   .addDisplacementMarker(() -> {
-    //       dropCone(2); //Drop cone on junction
-    //   })
-    //   .lineToLinearHeading(midWayPose)
 }
