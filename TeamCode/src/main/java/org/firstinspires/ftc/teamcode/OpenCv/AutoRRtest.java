@@ -70,8 +70,8 @@ public class AutoRRtest extends LinearOpMode{
     private static final double FINGER_UP = 0.55;
     private static final double FINGER_DOWN = 0.85;
     private Servo claw;
-    private static final double CLAW_CLOSED = 0.42;
-    private static final double CLAW_OPEN = 0.2;
+    private static final double CLAW_CLOSED = 0.85;
+    private static final double CLAW_OPEN = 0.4;
     private Servo clawLinkage;
     private static final double CLAW_LINKAGE_FIVE = 0.53;
     private static final double CLAW_LINKAGE_FOUR = 0.63;
@@ -88,9 +88,11 @@ public class AutoRRtest extends LinearOpMode{
     private DcMotor rightSlide;
     private static final double SLIDE_UP_TOP = 1;
     private static final double SLIDE_UP_TALL_JUNCTION = .83;
-    private static final double SLIDE_UP_MED_JUNCTION = .75;
-    private static final double SLIDE_UP_SM_JUNCTION = .5;
-    private static final double SLIDE_DOWN = -.1;
+    private static final double SLIDE_UP_MED_JUNCTION = .5;
+    private static final double SLIDE_UP_SM_JUNCTION = .4;
+    private static final double SLIDE_UP_CONE = .25;
+    private static final double SLIDE_DOWN = -0.5;
+    private DcMotor turret;
 
     //Magnetic Switches
     private RevTouchSensor slideMag;
@@ -141,6 +143,11 @@ public class AutoRRtest extends LinearOpMode{
         leftSlide.setDirection(DcMotor.Direction.REVERSE);
         rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        turret = hardwareMap.get(DcMotor.class, "turret");
+        turret.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        turret.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //Servos
         odoRetractor = hardwareMap.get(Servo.class, "odoRetractor");
         flipOut = hardwareMap.get(Servo.class, "flipOut");
@@ -315,19 +322,52 @@ public class AutoRRtest extends LinearOpMode{
         switch (startPosition) {
             case BLUE_LEFT:
                 trajectoryAuto = drive.trajectorySequenceBuilder(new Pose2d())
-                        .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // flip out claw linkage slide
+                        .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
                         .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_OUT)) // flip out claw linkage slide
-                        .forward(22).UNSTABLE_addTemporalMarkerOffset(-0.2, () -> slideUpTall()) // move .forward(??) inches and raise the lift all the way up
+                        .waitSeconds(0.4)
+                        //.forward(21)
+                        .forward(23.5) // move .forward(??) inches and raise the lift all the way up
                         .waitSeconds(0.1) // pause (??) microsec
-                        .strafeLeft(35) // .strafeLeft(??) inches
-                        .waitSeconds(0.5) // pause (??) a microsec to allow the lift to go all the way up
+                        .strafeLeft(36).UNSTABLE_addTemporalMarkerOffset(-0.7, () -> slideUpMed())// .strafeLeft(??) inches
+                        .waitSeconds(0.3) // pause (??) a microsec to allow the lift to go all the way up
                         .addTemporalMarker(() -> dropCone(0)) // drop the cone
-                        //.strafeLeft(12).UNSTABLE_addTemporalMarkerOffset(-0.1, () -> slideDown()) //.strafeLeft(??) inches to be in line with cone stack and lower the lift all the way down
-                        .strafeLeft(14)
-                        .addTemporalMarker(() -> slideDown())
-                        .waitSeconds(.5) // pause (??) a microsec to allow the lift to go all the way down
-                        .back(34)
+                        .waitSeconds(0.1)
+                        .strafeLeft(13).UNSTABLE_addTemporalMarkerOffset(-0.7, () -> slideDown())
+                        //.waitSeconds(0.1)
+                        //.addTemporalMarker(() -> slideDown())
+                        //.strafeLeft(13).UNSTABLE_addTemporalMarkerOffset(0.1, () -> slideDown()) //.strafeLeft(??) inches to be in line with cone stack and lower the lift all the way down
+                        //.strafeLeft(14)
+                        //.addTemporalMarker(() -> slideDown())
+                        .waitSeconds(0.3) // pause (??) a microsec to allow the lift to go all the way down
+                        .addTemporalMarker(() -> brake.setPosition(BRAKE_OFF)) // unlock turret
+                        .addTemporalMarker(() -> turnTurret(0.25,-727)) // turn turret
+                        //.addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // unlock turret
+                        .waitSeconds(0.2)
+                        .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // unlock turret
+                        .back(45)
+                        .waitSeconds(0.2)
+                        .addTemporalMarker(() -> pickCone(1))
+                        .waitSeconds(0.3)
+                        .addTemporalMarker(() -> slideUp(SLIDE_UP_CONE))
+                        .waitSeconds(0.6)
+                        .addTemporalMarker(() -> brake.setPosition(BRAKE_OFF)) // unlock turret
+                        .waitSeconds(0.2)
+                        .addTemporalMarker(() -> turnTurret(0.25,780)) // turn turret
+                        .waitSeconds(0.2)
+                        .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // unlock turret
+                        .waitSeconds(0.2)
+                        //.forward(20)
+                        .forward(54)
+                        //.forward(54).UNSTABLE_addTemporalMarkerOffset(0.1, () -> lift(0.5,650))
+                        .waitSeconds(0.4) // pause (??) a microsec to allow the lift to go all the way up
+                        .addTemporalMarker(() -> dropCone(0)) // drop the cone
+                        .waitSeconds(0.2)
+
+                        .addTemporalMarker(() -> brake.setPosition(BRAKE_OFF)) // unlock turret
+                        .addTemporalMarker(() -> turnTurret(0.25,-780)) // turn turret
+                        //.addTemporalMarker(() -> lift(0.1,0)) // turn turret
                         .build();
+
 
                 break;
             case BLUE_RIGHT:
@@ -342,8 +382,61 @@ public class AutoRRtest extends LinearOpMode{
         }
 
         //Drop Preloaded Cone, Pick 5 cones and park
-
     }
+
+    //drive turret
+    public void turnTurret(double speed, int distance) {
+
+        turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        turret.setTargetPosition(distance);
+
+        turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        turret.setPower(speed);
+
+
+        while (turret.isBusy() && opModeIsActive()) {
+            telemetry.addData("Horizontal Slide", turret.getCurrentPosition());
+            telemetry.update();
+        }
+
+        turret.setPower(0);
+
+        //turret.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        //sleep(100);
+    }
+    //drive turret
+    public void lift(double speed, int distance) {
+
+        //leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+       // rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftSlide.setTargetPosition(distance);
+        rightSlide.setTargetPosition(distance);
+
+        leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        leftSlide.setPower(speed);
+        rightSlide.setPower(speed);
+
+
+        while (!(Math.abs(leftSlide.getCurrentPosition()-distance) <= 10)) {
+            telemetry.addData("Horizontal Slide", leftSlide.getCurrentPosition());
+            telemetry.update();
+        }
+
+        leftSlide.setPower(0);
+        rightSlide.setPower(0);
+
+        //turret.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        //sleep(100);
+    }
+
+
     //Build parking trajectory based on target detected by vision
     public void buildParking(){
         switch (startPosition) {
@@ -420,6 +513,8 @@ public class AutoRRtest extends LinearOpMode{
     //Write a method which is able to pick the cone from the stack depending on your subsystems
     public void pickCone(int coneCount) {
         /*TODO: Add code to pick Cone 1 from stack*/
+        claw.setPosition(CLAW_CLOSED);
+        finger.setPosition(FINGER_DOWN);
         telemetry.addData("Picked Cone: Stack", coneCount);
         telemetry.update();
     }
@@ -436,6 +531,14 @@ public class AutoRRtest extends LinearOpMode{
             telemetry.addData("Dropped Cone: Stack", coneCount);
         }
         telemetry.update();
+    }
+    public void grabCone(){
+        claw.setPosition(CLAW_CLOSED);
+        finger.setPosition(FINGER_DOWN);
+    }
+    public void slideUp(double here){
+        rightSlide.setPower(here);
+        leftSlide.setPower(here);
     }
     public void slideUpTall(){
         rightSlide.setPower(SLIDE_UP_TALL_JUNCTION);
