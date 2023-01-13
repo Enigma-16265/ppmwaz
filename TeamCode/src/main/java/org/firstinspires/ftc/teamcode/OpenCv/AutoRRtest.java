@@ -324,12 +324,12 @@ public class AutoRRtest extends LinearOpMode{
                 trajectoryAuto = drive.trajectorySequenceBuilder(new Pose2d())
                         .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
                         .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_OUT)) // flip out claw linkage slide
-                        .waitSeconds(0.4)
+                        .waitSeconds(0.2)
                         //.forward(21)
                         .forward(23.5) // move .forward(??) inches and raise the lift all the way up
                         .waitSeconds(0.1) // pause (??) microsec
-                        .strafeLeft(36).UNSTABLE_addTemporalMarkerOffset(-0.7, () -> slideUpMed())// .strafeLeft(??) inches
-                        .waitSeconds(0.3) // pause (??) a microsec to allow the lift to go all the way up
+                        .strafeLeft(36).UNSTABLE_addTemporalMarkerOffset(-0.5, () -> slideUpMed())// .strafeLeft(??) inches
+                        .waitSeconds(0.2) // pause (??) a microsec to allow the lift to go all the way up
                         .addTemporalMarker(() -> dropCone(0)) // drop the cone
                         .waitSeconds(0.1)
                         .strafeLeft(13).UNSTABLE_addTemporalMarkerOffset(-0.7, () -> slideDown())
