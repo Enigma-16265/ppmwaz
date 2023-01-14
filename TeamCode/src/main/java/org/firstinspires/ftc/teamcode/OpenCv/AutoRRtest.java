@@ -46,7 +46,7 @@ import org.openftc.easyopencv.OpenCvInternalCamera;
 import java.util.ArrayList;
 import java.util.Locale;
 
-@Autonomous(name = "ENIGMA Autonomous", group = "00-Autonomous", preselectTeleOp = "Mike Wazowski")
+@Autonomous(name = "ENIGMA DON'T DO IT", group = "00-Autonomous", preselectTeleOp = "Mike Wazowski")
 public class AutoRRtest extends LinearOpMode{
 
     //Define and declare Robot Starting Locations

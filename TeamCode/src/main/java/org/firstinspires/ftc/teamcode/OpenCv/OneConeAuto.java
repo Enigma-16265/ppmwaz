@@ -97,7 +97,7 @@ public class OneConeAuto extends LinearOpMode{
     private static final double POWER_TWENTY = 0.2;
     private static final double POWER_TEN = 0.1;
     private static final double POWER_FIVE = 0.05;
-    private static final double LIFT_DOWN = -0.5;
+    private static final double LIFT_DOWN = -0.3;
     private DcMotor turret;
 
     //Magnetic Switches
@@ -318,7 +318,6 @@ public class OneConeAuto extends LinearOpMode{
 
     //Initialize any other TrajectorySequences as desired
     TrajectorySequence trajectoryAuto, trajectoryParking ;
-
     //Initialize any other Pose2d's as desired Pose2d initPose; // Starting Pose
 
     //Set all position based on selected staring location and Build Autonomous Trajectory
@@ -330,11 +329,9 @@ public class OneConeAuto extends LinearOpMode{
                 trajectoryAuto = drive.trajectorySequenceBuilder(startPose)
                         .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
                         .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_OUT)) // flip out claw linkage slide
-                        .waitSeconds(0.4)
+                        .waitSeconds(0.6)
                         .forward(23.5) // .forward(??) inches
-                        //.UNSTABLE_addTemporalMarkerOffset(0, () -> liftUp(POWER_THIRTY))//  lift up (motor power)
                         .UNSTABLE_addTemporalMarkerOffset(0, () -> lift(POWER_FULL, 940))//  lift up (motor power)
-                        //.waitSeconds(0.4) // pause (??) microseconds
                         // UNSTABLE_addTemporalMarkerOffset(-0.5, () -> mechCallBack) NOTE: the first parameter "offset" if negative
                         // is the amount of time the callback will preformed before the end of the trajectory it is attached to.
                         .strafeLeft(36)
@@ -343,18 +340,76 @@ public class OneConeAuto extends LinearOpMode{
                         .waitSeconds(0.1) // pause (??) microseconds
                         .strafeLeft(13)
                         .waitSeconds(0.1) // pause (??) microseconds
+                        .addTemporalMarker(() -> preSlideDown())
+                        .waitSeconds(.5)
                         .addTemporalMarker(() -> slideDown())
                         .waitSeconds(1)
                         .build();
                 break;
             case BLUE_RIGHT:
-
+                trajectoryAuto = drive.trajectorySequenceBuilder(startPose)
+                        .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                        .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_OUT)) // flip out claw linkage slide
+                        .waitSeconds(0.6)
+                        .back(24) // .forward(??) inches
+                        .UNSTABLE_addTemporalMarkerOffset(0, () -> lift(POWER_FULL, 940))//  lift up (motor power)
+                        // UNSTABLE_addTemporalMarkerOffset(-0.5, () -> mechCallBack) NOTE: the first parameter "offset" if negative
+                        // is the amount of time the callback will preformed before the end of the trajectory it is attached to.
+                        .strafeLeft(61)
+                        .waitSeconds(2) // pause (??) a microsec to allow the lift to go all the way up
+                        .addTemporalMarker(() -> dropCone(0)) // drop the cone, enter a count for each one
+                        .waitSeconds(0.1) // pause (??) microseconds
+                        .strafeRight(12)
+                        .waitSeconds(0.1) // pause (??) microseconds
+                        .addTemporalMarker(() -> preSlideDown())
+                        .waitSeconds(.5)
+                        .addTemporalMarker(() -> slideDown())
+                        .waitSeconds(1)
+                        .build();
                 break;
             case RED_LEFT:
-
+                trajectoryAuto = drive.trajectorySequenceBuilder(startPose)
+                        .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                        .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_OUT)) // flip out claw linkage slide
+                        .waitSeconds(0.6)
+                        .forward(22) // .forward(??) inches
+                        .UNSTABLE_addTemporalMarkerOffset(0, () -> lift(POWER_FULL, 940))//  lift up (motor power)
+                        // UNSTABLE_addTemporalMarkerOffset(-0.5, () -> mechCallBack) NOTE: the first parameter "offset" if negative
+                        // is the amount of time the callback will preformed before the end of the trajectory it is attached to.
+                        .strafeLeft(35)
+                        .waitSeconds(1) // pause (??) a microsec to allow the lift to go all the way up
+                        .addTemporalMarker(() -> dropCone(0)) // drop the cone, enter a count for each one
+                        .waitSeconds(0.1) // pause (??) microseconds
+                        .strafeLeft(13)
+                        .waitSeconds(0.1) // pause (??) microseconds
+                        .addTemporalMarker(() -> preSlideDown())
+                        .waitSeconds(.5)
+                        .addTemporalMarker(() -> slideDown())
+                        .waitSeconds(1)
+                        .build();
                 break;
             case RED_RIGHT:
-
+                trajectoryAuto = drive.trajectorySequenceBuilder(startPose)
+                        .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                        .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_OUT)) // flip out claw linkage slide
+                        .waitSeconds(0.6)
+                        .back(24) // .forward(??) inches
+                        .UNSTABLE_addTemporalMarkerOffset(0, () -> lift(POWER_FULL, 940))//  lift up (motor power)
+                        // UNSTABLE_addTemporalMarkerOffset(-0.5, () -> mechCallBack) NOTE: the first parameter "offset" if negative
+                        // is the amount of time the callback will preformed before the end of the trajectory it is attached to.
+                        .strafeLeft(60)
+                        .waitSeconds(0.7)
+                        .back(3)
+                        .waitSeconds(1.5) // pause (??) a microsec to allow the lift to go all the way up
+                        .addTemporalMarker(() -> dropCone(0)) // drop the cone, enter a count for each one
+                        .waitSeconds(0.1) // pause (??) microseconds
+                        .strafeRight(12)
+                        .waitSeconds(0.1) // pause (??) microseconds
+                        .addTemporalMarker(() -> preSlideDown())
+                        .waitSeconds(.5)
+                        .addTemporalMarker(() -> slideDown())
+                        .waitSeconds(1)
+                        .build();
                 break;
         }
 
@@ -424,57 +479,122 @@ public class OneConeAuto extends LinearOpMode{
                     case 1:
                         trajectoryParking = drive.trajectorySequenceBuilder(trajectoryAuto.end())
                                 .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                                .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
                                 .waitSeconds(0.2)
-
-                               .back(51)
-                                //.back(10)
+                                .back(45)
                                 .waitSeconds(0.2)
                                 .build();
                         break; // Location 1
                     case 2:
-
+                        trajectoryParking = drive.trajectorySequenceBuilder(trajectoryAuto.end())
+                                .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                                .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
+                                .waitSeconds(0.2)
+                                .back(24)
+                                .waitSeconds(0.2)
+                                .build();
                         break; // Location 2
                     case 3:
-
+                        trajectoryParking = drive.trajectorySequenceBuilder(trajectoryAuto.end())
+                                .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                                .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
+                                .waitSeconds(0.2)
+                                .back(3)
+                                .waitSeconds(0.2)
+                                .build();
                         break; // Location 3
                 }
                 break;
             case BLUE_RIGHT:
                 switch(DetectedTag){
                     case 1:
-
+                        trajectoryParking = drive.trajectorySequenceBuilder(trajectoryAuto.end())
+                                .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                                .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
+                                .waitSeconds(0.2)
+                                .forward(43)
+                                .waitSeconds(0.2)
+                                .build();
                         break; // Location 1
                     case 2:
-
+                        trajectoryParking = drive.trajectorySequenceBuilder(trajectoryAuto.end())
+                                .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                                .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
+                                .waitSeconds(0.2)
+                                .forward(20)
+                                .waitSeconds(0.2)
+                                .build();
                         break; // Location 2
                     case 3:
-
+                        trajectoryParking = drive.trajectorySequenceBuilder(trajectoryAuto.end())
+                                .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                                .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
+                                .waitSeconds(0.2)
+                                .forward(.01)
+                                .waitSeconds(0.2)
+                                .build();
                         break; // Location 3
                 }
                 break;
             case RED_LEFT:
                 switch(DetectedTag){
                     case 1:
-
+                        trajectoryParking = drive.trajectorySequenceBuilder(trajectoryAuto.end())
+                                .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                                .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
+                                .waitSeconds(0.2)
+                                .back(45)
+                                .waitSeconds(0.2)
+                                .build();
                         break; // Location 1
                     case 2:
-
+                        trajectoryParking = drive.trajectorySequenceBuilder(trajectoryAuto.end())
+                                .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                                .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
+                                .waitSeconds(0.2)
+                                .back(25)
+                                .waitSeconds(0.2)
+                                .build();
                         break; // Location 2
                     case 3:
-
+                        trajectoryParking = drive.trajectorySequenceBuilder(trajectoryAuto.end())
+                                .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                                .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
+                                .waitSeconds(0.2)
+                                .back(3)
+                                .waitSeconds(0.2)
+                                .build();
                         break; // Location 3
                 }
                 break;
             case RED_RIGHT:
                 switch(DetectedTag){
                     case 1:
-
+                        trajectoryParking = drive.trajectorySequenceBuilder(trajectoryAuto.end())
+                                .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                                .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
+                                .waitSeconds(0.2)
+                                .forward(44)
+                                .waitSeconds(0.2)
+                                .build();
                         break; // Location 1
                     case 2:
-
+                        trajectoryParking = drive.trajectorySequenceBuilder(trajectoryAuto.end())
+                                .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                                .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
+                                .waitSeconds(0.2)
+                                .forward(21)
+                                .waitSeconds(0.2)
+                                .build();
                         break; // Location 2
                     case 3:
-
+                        trajectoryParking = drive.trajectorySequenceBuilder(trajectoryAuto.end())
+                                .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                                .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
+                                .waitSeconds(0.2)
+                                .forward(.01)
+                                .waitSeconds(0.2)
+                                .build();
                         break; // Location 3
                 }
                 break;
@@ -532,8 +652,24 @@ public class OneConeAuto extends LinearOpMode{
         leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         rightSlide.setPower(LIFT_DOWN);
         leftSlide.setPower(LIFT_DOWN);
+    }
+    public void preSlideDown(){
+        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        rightSlide.setPower(0);
+        leftSlide.setPower(0);
     }
     public void parkingComplete(){
 

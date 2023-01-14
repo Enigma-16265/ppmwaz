@@ -38,8 +38,8 @@ public class OdoMec extends LinearOpMode {
 
     //Servos
     private Servo odoRetractor;
-    private static final double ODO_RETRACT = .29; //.95
-    private static final double ODO_DOWN = .62;
+    private static final double ODO_RETRACT = 1; //.95
+    private static final double ODO_DOWN = .3;
     private Servo flipOut;
     private static final double FLIPPED_IN = .29; //.95
     private static final double FLIPPED_OUT = .62;
@@ -58,6 +58,19 @@ public class OdoMec extends LinearOpMode {
     private Servo brake;
     private static final double BRAKE_OFF = 0.16;
     private static final double BRAKE_ON = 0.28;
+
+    private static final double POWER_FULL = 1;
+    private static final double POWER_NINETY = 0.9;
+    private static final double POWER_EIGHTY = 0.8;
+    private static final double POWER_SEVENTY = 0.7;
+    private static final double POWER_SIXTY = 0.6;
+    private static final double POWER_FIFTY = 0.5;
+    private static final double POWER_FORTY = 0.4;
+    private static final double POWER_THIRTY = 0.3;
+    private static final double POWER_TWENTY = 0.2;
+    private static final double POWER_TEN = 0.1;
+    private static final double POWER_FIVE = 0.05;
+    private static final double LIFT_DOWN = -0.3;
 
     private static int lastDirection;
 
@@ -147,7 +160,7 @@ public class OdoMec extends LinearOpMode {
 
 
         //Set servo positions
-
+        odoRetractor.setPosition(ODO_RETRACT);
         flipOut.setPosition(FLIPPED_IN);
         clawLinkage.setPosition(CLAW_LINKAGE_FIVE);
         claw.setPosition(CLAW_OPEN);
@@ -213,8 +226,8 @@ public class OdoMec extends LinearOpMode {
 
 
             if (!slideMag.isPressed()) { // SLIDE_UP
-                motorVerticalLiftRightPower = Range.clip(motorVerticalLiftRightPower, -0.25, 1); // was 1
-                motorVerticalLiftLeftPower = Range.clip(motorVerticalLiftLeftPower, -0.25, 1); //-0.90, .93)
+                motorVerticalLiftRightPower = Range.clip(motorVerticalLiftRightPower, -0.4, 1); // was 1
+                motorVerticalLiftLeftPower = Range.clip(motorVerticalLiftLeftPower, -0.4, 1); //-0.90, .93)
                 rightSlide.setPower(motorVerticalLiftRightPower);
                 leftSlide.setPower(motorVerticalLiftLeftPower);
             } else { // SLIDE_DOWN
@@ -226,28 +239,13 @@ public class OdoMec extends LinearOpMode {
 
 
 
-            /*
-            if (gamepad2.left_trigger == 1){
-                leftSlide.setTargetPosition(300);
-                rightSlide.setTargetPosition(300);
+/*
+if (gamepad2.dpad_up) {
+    lift(POWER_FULL,940);
+}
 
-                leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-                leftSlide.setPower(0.5);
-                rightSlide.setPower(0.5);
-
-                while (leftSlide.isBusy() && opModeIsActive()) {
-                    telemetry.addData("Horizontal Slide", leftSlide.getCurrentPosition());
-                    telemetry.update();
-                }
-
-                leftSlide.setPower(0);
-                rightSlide.setPower(0);
-
-            }
-
-             */
+ */
 
             // Turret Brake
             if (gamepad2.right_trigger == 1) {
@@ -299,6 +297,9 @@ public class OdoMec extends LinearOpMode {
             } else if (!gamepad2.right_bumper && gamepad2.y)  {  // Otherwise, stop the motor
                 claw.setPosition(CLAW_OPEN);
                 finger.setPosition(FINGER_UP);
+            } else if (gamepad2.left_trigger == 1) {
+                claw.setPosition(CLAW_CLOSED);
+                finger.setPosition(FINGER_DOWN);
             } else {
                 claw.setPosition(CLAW_OPEN);
                 finger.setPosition(FINGER_UP);
@@ -391,7 +392,7 @@ public class OdoMec extends LinearOpMode {
 
              */
             //IF NOT WORKIKNG, TAKE OUT "&& !gamepad2.start" BELOW
-            if (gamepad2.b && !gamepad2.right_bumper && !gamepad2.start) {
+            if (gamepad2.b && !gamepad2.right_bumper) {
                 while (!homeMag.isPressed()) {
                     //right
                     if (turret.getCurrentPosition() < 0) {
@@ -423,5 +424,38 @@ public class OdoMec extends LinearOpMode {
             idle();
 
         }
+
     }
+    /*
+    public void lift(double speed, int distance) {
+
+        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        leftSlide.setTargetPosition(distance);
+        rightSlide.setTargetPosition(distance);
+
+
+        leftSlide.setPower(speed);
+        rightSlide.setPower(speed);
+
+    }
+    public void slideDown(){
+        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        rightSlide.setPower(LIFT_DOWN);
+        leftSlide.setPower(LIFT_DOWN);
+    }
+
+     */
 }
