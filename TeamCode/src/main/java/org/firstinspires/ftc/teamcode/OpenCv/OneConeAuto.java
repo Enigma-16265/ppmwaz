@@ -334,7 +334,7 @@ public class OneConeAuto extends LinearOpMode{
                         .UNSTABLE_addTemporalMarkerOffset(0, () -> lift(POWER_FULL, 940))//  lift up (motor power)
                         // UNSTABLE_addTemporalMarkerOffset(-0.5, () -> mechCallBack) NOTE: the first parameter "offset" if negative
                         // is the amount of time the callback will preformed before the end of the trajectory it is attached to.
-                        .strafeLeft(36)
+                        .strafeLeft(38)
                         .waitSeconds(1) // pause (??) a microsec to allow the lift to go all the way up
                         .addTemporalMarker(() -> dropCone(0)) // drop the cone, enter a count for each one
                         .waitSeconds(0.1) // pause (??) microseconds
@@ -372,11 +372,11 @@ public class OneConeAuto extends LinearOpMode{
                         .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
                         .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_OUT)) // flip out claw linkage slide
                         .waitSeconds(0.6)
-                        .forward(22) // .forward(??) inches
+                        .forward(20) // .forward(??) inches
                         .UNSTABLE_addTemporalMarkerOffset(0, () -> lift(POWER_FULL, 940))//  lift up (motor power)
                         // UNSTABLE_addTemporalMarkerOffset(-0.5, () -> mechCallBack) NOTE: the first parameter "offset" if negative
                         // is the amount of time the callback will preformed before the end of the trajectory it is attached to.
-                        .strafeLeft(35)
+                        .strafeLeft(37)
                         .waitSeconds(1) // pause (??) a microsec to allow the lift to go all the way up
                         .addTemporalMarker(() -> dropCone(0)) // drop the cone, enter a count for each one
                         .waitSeconds(0.1) // pause (??) microseconds

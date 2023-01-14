@@ -79,7 +79,7 @@ public class OdoMec extends LinearOpMode {
     private RevTouchSensor homeMag;
 
     //Distance sensor
-    private DistanceSensor distance;
+    //private DistanceSensor distance;
 
     BNO055IMU imu;                // Additional Gyro device
     Orientation angles;
@@ -122,7 +122,7 @@ public class OdoMec extends LinearOpMode {
         homeMag = hardwareMap.get(RevTouchSensor.class, "homeMag");
 
         //Distance sensor
-        distance = hardwareMap.get(DistanceSensor.class, "Distance");
+       // distance = hardwareMap.get(DistanceSensor.class, "Distance");
 
         rightFront.setDirection(DcMotor.Direction.REVERSE);
         leftFront.setDirection(DcMotor.Direction.FORWARD);
@@ -215,8 +215,8 @@ public class OdoMec extends LinearOpMode {
 
             //Mechanisms
             // If the distance in centimeters is less than 10, set the power to 0.3
-            telemetry.addData("deviceName",distance.getDeviceName() );
-            telemetry.addData("range", String.format("%.01f mm", distance.getDistance(DistanceUnit.MM)));
+           // telemetry.addData("deviceName",distance.getDeviceName() );
+           // telemetry.addData("range", String.format("%.01f mm", distance.getDistance(DistanceUnit.MM)));
 
             //telemetry.update();
 
@@ -226,8 +226,8 @@ public class OdoMec extends LinearOpMode {
 
 
             if (!slideMag.isPressed()) { // SLIDE_UP
-                motorVerticalLiftRightPower = Range.clip(motorVerticalLiftRightPower, -0.4, 1); // was 1
-                motorVerticalLiftLeftPower = Range.clip(motorVerticalLiftLeftPower, -0.4, 1); //-0.90, .93)
+                motorVerticalLiftRightPower = Range.clip(motorVerticalLiftRightPower, -0.6, 1); // was 1
+                motorVerticalLiftLeftPower = Range.clip(motorVerticalLiftLeftPower, -0.6, 1); //-0.90, .93)
                 rightSlide.setPower(motorVerticalLiftRightPower);
                 leftSlide.setPower(motorVerticalLiftLeftPower);
             } else { // SLIDE_DOWN
@@ -291,6 +291,7 @@ if (gamepad2.dpad_up) {
             }
 
             // Auto Claw
+            /*
             if (distance.getDistance(DistanceUnit.MM) < 40 && !gamepad2.y) {
                 claw.setPosition(CLAW_CLOSED);
                 finger.setPosition(FINGER_DOWN);
@@ -305,6 +306,16 @@ if (gamepad2.dpad_up) {
                 finger.setPosition(FINGER_UP);
             }
             //else
+
+             */
+
+            if (gamepad2.left_trigger == 1) {
+                claw.setPosition(CLAW_CLOSED);
+                finger.setPosition(FINGER_DOWN);
+            } else {
+                claw.setPosition(CLAW_OPEN);
+                finger.setPosition(FINGER_UP);
+            }
 
 
 
