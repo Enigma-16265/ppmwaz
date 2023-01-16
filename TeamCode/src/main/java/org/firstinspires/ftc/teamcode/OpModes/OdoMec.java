@@ -47,7 +47,7 @@ public class OdoMec extends LinearOpMode {
     private static final double FINGER_UP = 0.55;
     private static final double FINGER_DOWN = 0.85;
     private Servo claw;
-    private static final double CLAW_CLOSED = 0.80;
+    private static final double CLAW_CLOSED = 0.85;
     private static final double CLAW_OPEN = 0.4;
     private Servo clawLinkage;
     private static final double CLAW_LINKAGE_FIVE = 0.53;
@@ -163,7 +163,7 @@ public class OdoMec extends LinearOpMode {
         odoRetractor.setPosition(ODO_RETRACT);
         flipOut.setPosition(FLIPPED_IN);
         clawLinkage.setPosition(CLAW_LINKAGE_FIVE);
-        claw.setPosition(CLAW_OPEN);
+        //claw.setPosition(CLAW_OPEN);
         brake.setPosition(BRAKE_OFF);
         finger.setPosition(FINGER_UP);
 
@@ -248,7 +248,7 @@ if (gamepad2.dpad_up) {
  */
 
             // Turret Brake
-            if (gamepad2.right_trigger == 1) {
+            if (gamepad2.left_trigger == 1) {
                 brake.setPosition(BRAKE_ON);
             } else {
                 brake.setPosition(BRAKE_OFF);
@@ -309,11 +309,11 @@ if (gamepad2.dpad_up) {
 
              */
 
-            if (gamepad2.left_trigger == 1) {
-                claw.setPosition(CLAW_CLOSED);
+            if (gamepad2.right_trigger > 0) {
+                //claw.setPosition(CLAW_CLOSED);
                 finger.setPosition(FINGER_DOWN);
             } else {
-                claw.setPosition(CLAW_OPEN);
+                //claw.setPosition(CLAW_OPEN);
                 finger.setPosition(FINGER_UP);
             }
 

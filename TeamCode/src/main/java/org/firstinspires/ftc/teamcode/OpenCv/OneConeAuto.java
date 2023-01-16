@@ -173,7 +173,7 @@ public class OneConeAuto extends LinearOpMode{
         odoRetractor.setPosition(0.3);
         flipOut.setPosition(FLIPPED_IN);
         clawLinkage.setPosition(CLAW_LINKAGE_FIVE);
-        claw.setPosition(CLAW_CLOSED);
+        //claw.setPosition(CLAW_CLOSED);
         brake.setPosition(BRAKE_OFF);
         finger.setPosition(FINGER_DOWN);
 
@@ -355,7 +355,9 @@ public class OneConeAuto extends LinearOpMode{
                         .UNSTABLE_addTemporalMarkerOffset(0, () -> lift(POWER_FULL, 940))//  lift up (motor power)
                         // UNSTABLE_addTemporalMarkerOffset(-0.5, () -> mechCallBack) NOTE: the first parameter "offset" if negative
                         // is the amount of time the callback will preformed before the end of the trajectory it is attached to.
-                        .strafeLeft(61)
+                        .strafeLeft(60)
+                        .waitSeconds(0.5)
+                        .back(4)
                         .waitSeconds(2) // pause (??) a microsec to allow the lift to go all the way up
                         .addTemporalMarker(() -> dropCone(0)) // drop the cone, enter a count for each one
                         .waitSeconds(0.1) // pause (??) microseconds
@@ -521,7 +523,7 @@ public class OneConeAuto extends LinearOpMode{
                                 .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
                                 .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
                                 .waitSeconds(0.2)
-                                .forward(20)
+                                .forward(21)
                                 .waitSeconds(0.2)
                                 .build();
                         break; // Location 2
@@ -619,7 +621,7 @@ public class OneConeAuto extends LinearOpMode{
     //Write a method which is able to pick the cone from the stack depending on your subsystems
     public void pickCone(int coneCount) {
         /*TODO: Add code to pick Cone 1 from stack*/
-        claw.setPosition(CLAW_CLOSED);
+    //    claw.setPosition(CLAW_CLOSED);
         finger.setPosition(FINGER_DOWN);
         telemetry.addData("Picked Cone: Stack", coneCount);
         telemetry.update();
@@ -628,7 +630,7 @@ public class OneConeAuto extends LinearOpMode{
     //Write a method which is able to drop the cone depending on your subsystems
     public void dropCone(int coneCount){
         /*TODO: Add code to drop cone on junction*/
-        claw.setPosition(CLAW_OPEN);
+      //  claw.setPosition(CLAW_OPEN);
         finger.setPosition(FINGER_UP);
 
         if (coneCount == 0) {
