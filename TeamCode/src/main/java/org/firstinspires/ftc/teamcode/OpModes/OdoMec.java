@@ -3,8 +3,10 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -47,14 +49,16 @@ public class OdoMec extends LinearOpMode {
     private static final double FINGER_UP = 0.55;
     private static final double FINGER_DOWN = 0.85;
     private Servo claw;
-    private static final double CLAW_CLOSED = 0.85;
-    private static final double CLAW_OPEN = 0.4;
+    private static final double CLAW_CLOSED = 0.55;
+    private static final double CLAW_OPEN = 0.05;
+   // private static final double CLAW_CLOSED = 0.4;
+   // private static final double CLAW_OPEN = 0.95;
     private Servo clawLinkage;
-    private static final double CLAW_LINKAGE_FIVE = 0.53;
-    private static final double CLAW_LINKAGE_FOUR = 0.63;
-    private static final double CLAW_LINKAGE_THREE = 0.7;
-    private static final double CLAW_LINKAGE_TWO = 0.78;
-    private static final double CLAW_LINKAGE_ONE = 0.87;
+    private static final double CLAW_LINKAGE_FIVE = 0.5;
+    private static final double CLAW_LINKAGE_FOUR = 0.57;
+    private static final double CLAW_LINKAGE_THREE = 0.63;
+    private static final double CLAW_LINKAGE_TWO = 0.7;
+    private static final double CLAW_LINKAGE_ONE = 0.78;
     private Servo brake;
     private static final double BRAKE_OFF = 0.16;
     private static final double BRAKE_ON = 0.28;
@@ -74,12 +78,14 @@ public class OdoMec extends LinearOpMode {
 
     private static int lastDirection;
 
+    private static boolean flipper_pos;
+
     //Magnetic Switches
     private RevTouchSensor slideMag;
     private RevTouchSensor homeMag;
 
     //Distance sensor
-    //private DistanceSensor distance;
+    private ColorRangeSensor distance;
 
     BNO055IMU imu;                // Additional Gyro device
     Orientation angles;
@@ -112,7 +118,7 @@ public class OdoMec extends LinearOpMode {
         //Servos
         odoRetractor = hardwareMap.get(Servo.class, "odoRetractor");
         flipOut = hardwareMap.get(Servo.class, "flipOut");
-        finger = hardwareMap.get(Servo.class, "finger");
+        //finger = hardwareMap.get(Servo.class, "finger");
         claw = hardwareMap.get(Servo.class, "claw");
         clawLinkage = hardwareMap.get(Servo.class, "clawLinkage");
         brake = hardwareMap.get(Servo.class, "brake");
@@ -122,7 +128,7 @@ public class OdoMec extends LinearOpMode {
         homeMag = hardwareMap.get(RevTouchSensor.class, "homeMag");
 
         //Distance sensor
-       // distance = hardwareMap.get(DistanceSensor.class, "Distance");
+       distance = hardwareMap.get(ColorRangeSensor.class, "Distance");
 
         rightFront.setDirection(DcMotor.Direction.REVERSE);
         leftFront.setDirection(DcMotor.Direction.FORWARD);
@@ -161,11 +167,12 @@ public class OdoMec extends LinearOpMode {
 
         //Set servo positions
         odoRetractor.setPosition(ODO_RETRACT);
+        claw.setPosition(CLAW_CLOSED);
         flipOut.setPosition(FLIPPED_IN);
+        flipper_pos = true;
         clawLinkage.setPosition(CLAW_LINKAGE_FIVE);
-        //claw.setPosition(CLAW_OPEN);
         brake.setPosition(BRAKE_OFF);
-        finger.setPosition(FINGER_UP);
+        //finger.setPosition(FINGER_UP);
 
 // Set Motor Power
         turret.setPower(0);
@@ -215,10 +222,10 @@ public class OdoMec extends LinearOpMode {
 
             //Mechanisms
             // If the distance in centimeters is less than 10, set the power to 0.3
-           // telemetry.addData("deviceName",distance.getDeviceName() );
-           // telemetry.addData("range", String.format("%.01f mm", distance.getDistance(DistanceUnit.MM)));
+           telemetry.addData("deviceName",distance.getDeviceName() );
+           telemetry.addData("range", String.format("%.01f mm", distance.getDistance(DistanceUnit.MM)));
 
-            //telemetry.update();
+            telemetry.update();
 
             // Lift
             double motorVerticalLiftRightPower = -gamepad2.left_stick_y;
@@ -254,6 +261,14 @@ if (gamepad2.dpad_up) {
                 brake.setPosition(BRAKE_OFF);
             }
 
+
+            /*
+                private static final double CLAW_LINKAGE_FIVE = 0.5;
+    private static final double CLAW_LINKAGE_FOUR = 0.57;
+    private static final double CLAW_LINKAGE_THREE = 0.63;
+    private static final double CLAW_LINKAGE_TWO = 0.7;
+    private static final double CLAW_LINKAGE_ONE = 0.78;
+             */
             if (gamepad1.left_bumper) {
                 clawLinkage.setPosition(CLAW_LINKAGE_FIVE); // 0.53 - 5 cones, ALl the way up
             } else if (gamepad1.right_bumper) {
@@ -286,36 +301,51 @@ if (gamepad2.dpad_up) {
 
             if (gamepad2.x && !gamepad2.right_bumper){
                 flipOut.setPosition(FLIPPED_OUT);
+                flipper_pos = false;
+                sleep(200);
+                claw.setPosition(CLAW_OPEN);
             } else if (gamepad2.a && !gamepad2.right_bumper) {
+                claw.setPosition(CLAW_CLOSED);
                 flipOut.setPosition(FLIPPED_IN);
+                flipper_pos = true;
+
             }
 
             // Auto Claw
-            /*
-            if (distance.getDistance(DistanceUnit.MM) < 40 && !gamepad2.y) {
+
+            if (distance.getDistance(DistanceUnit.MM) < 40 && (!gamepad2.y || gamepad2.right_trigger > 0) ) {
                 claw.setPosition(CLAW_CLOSED);
-                finger.setPosition(FINGER_DOWN);
+
             } else if (!gamepad2.right_bumper && gamepad2.y)  {  // Otherwise, stop the motor
                 claw.setPosition(CLAW_OPEN);
-                finger.setPosition(FINGER_UP);
-            } else if (gamepad2.left_trigger == 1) {
+
+            } else if (gamepad2.right_trigger > 0) {
                 claw.setPosition(CLAW_CLOSED);
-                finger.setPosition(FINGER_DOWN);
-            } else {
+
+            } else if (!flipper_pos) {
                 claw.setPosition(CLAW_OPEN);
-                finger.setPosition(FINGER_UP);
+
+            } else {
+                claw.setPosition(CLAW_CLOSED);
             }
             //else
 
-             */
 
+/*
             if (gamepad2.right_trigger > 0) {
-                //claw.setPosition(CLAW_CLOSED);
-                finger.setPosition(FINGER_DOWN);
+                claw.setPosition(CLAW_CLOSED);
+                //finger.setPosition(FINGER_DOWN);
+                telemetry.addData("Status", "Claw " + claw.getPosition());
+
+                telemetry.update();
             } else {
-                //claw.setPosition(CLAW_OPEN);
-                finger.setPosition(FINGER_UP);
+                claw.setPosition(CLAW_OPEN);
+                //finger.setPosition(FINGER_UP);
+                telemetry.addData("Status", "Claw " + claw.getPosition());
+
+                telemetry.update();
             }
+            */
 
 
 
