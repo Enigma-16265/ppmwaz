@@ -7,7 +7,6 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.localization.ThreeTrackingWheelLocalizer;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
 import org.firstinspires.ftc.teamcode.util.Encoder;
 
 import java.util.Arrays;
@@ -32,11 +31,10 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
     public static double WHEEL_RADIUS = 17.5/25.4; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
 
-    public static double LATERAL_DISTANCE = 13.433557656875161; // in; distance between the left and right wheels
-    public static double FORWARD_OFFSET = 6.5; // in; offset of the lateral wheel
-
-    public static double X_MULTIPLIER = 1.0072836733333; // Multiplier in the X direction 1.004107
-    public static double Y_MULTIPLIER = 1.0204363633333; // Multiplier in the Y direction 1.002098
+    public static double LATERAL_DISTANCE = 13.249329317097857; // in; distance between the left and right wheels //13.317714478691085
+    public static double FORWARD_OFFSET = 6.25; // in; offset of the lateral wheel
+    public static double X_MULTIPLIER = .99794937; // Multiplier in the X direction 1.004107
+    public static double Y_MULTIPLIER = 1.00160475; // Multiplier in the Y direction 1.002098
 
     private Encoder leftEncoder, rightEncoder, frontEncoder;
 
