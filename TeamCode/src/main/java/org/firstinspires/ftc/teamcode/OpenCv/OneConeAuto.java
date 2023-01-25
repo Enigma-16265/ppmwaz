@@ -66,18 +66,18 @@ public class OneConeAuto extends LinearOpMode{
     private Servo flipOut;
     private static final double FLIPPED_IN = .29; //.95
     private static final double FLIPPED_OUT = .62;
-    private Servo finger;
-    private static final double FINGER_UP = 0.55;
-    private static final double FINGER_DOWN = 0.85;
-    private Servo claw;
-    private static final double CLAW_CLOSED = 0.85;
-    private static final double CLAW_OPEN = 0.4;
+//    private Servo finger;
+//    private static final double FINGER_UP = 0.55;
+//    private static final double FINGER_DOWN = 0.85;
+private Servo claw;
+    private static final double CLAW_CLOSED = 0.55;
+    private static final double CLAW_OPEN = 0.05;
     private Servo clawLinkage;
-    private static final double CLAW_LINKAGE_FIVE = 0.53;
-    private static final double CLAW_LINKAGE_FOUR = 0.63;
-    private static final double CLAW_LINKAGE_THREE = 0.7;
-    private static final double CLAW_LINKAGE_TWO = 0.78;
-    private static final double CLAW_LINKAGE_ONE = 0.87;
+    private static final double CLAW_LINKAGE_FIVE = 0.5;
+    private static final double CLAW_LINKAGE_FOUR = 0.57;
+    private static final double CLAW_LINKAGE_THREE = 0.63;
+    private static final double CLAW_LINKAGE_TWO = 0.7;
+    private static final double CLAW_LINKAGE_ONE = 0.78;
     private Servo brake;
     private static final double BRAKE_OFF = 0.16;
     private static final double BRAKE_ON = 0.28;
@@ -99,7 +99,7 @@ public class OneConeAuto extends LinearOpMode{
     private static final double POWER_FIVE = 0.05;
     private static final double LIFT_DOWN = -0.3;
     private DcMotor turret;
-
+    private static boolean flipper_pos;
     //Magnetic Switches
     private RevTouchSensor slideMag;
     private RevTouchSensor homeMag;
@@ -157,7 +157,7 @@ public class OneConeAuto extends LinearOpMode{
         //Servos
         odoRetractor = hardwareMap.get(Servo.class, "odoRetractor");
         flipOut = hardwareMap.get(Servo.class, "flipOut");
-        finger = hardwareMap.get(Servo.class, "finger");
+//        finger = hardwareMap.get(Servo.class, "finger");
         claw = hardwareMap.get(Servo.class, "claw");
         clawLinkage = hardwareMap.get(Servo.class, "clawLinkage");
         brake = hardwareMap.get(Servo.class, "brake");
@@ -170,12 +170,13 @@ public class OneConeAuto extends LinearOpMode{
         distance = hardwareMap.get(DistanceSensor.class, "Distance");
 
         //Set servo positions
-        odoRetractor.setPosition(0.3);
-        flipOut.setPosition(FLIPPED_IN);
+        odoRetractor.setPosition(0.1);
         clawLinkage.setPosition(CLAW_LINKAGE_FIVE);
-        //claw.setPosition(CLAW_CLOSED);
+        claw.setPosition(CLAW_CLOSED);
+        flipOut.setPosition(FLIPPED_IN);
+        flipper_pos = true;
         brake.setPosition(BRAKE_OFF);
-        finger.setPosition(FINGER_DOWN);
+ //       finger.setPosition(FINGER_DOWN);
 
         //initPose = new Pose2d();
         // Vision OpenCV / Apriltags
@@ -327,23 +328,39 @@ public class OneConeAuto extends LinearOpMode{
         switch (startPosition) {
             case BLUE_LEFT:
                 trajectoryAuto = drive.trajectorySequenceBuilder(startPose)
-                        .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                        //.addTemporalMarker(() -> turnTurret(0.25,(int) ticksToDegrees(90, Left))) // turn turret
+                        .addTemporalMarker(() -> turnTurret(0.25,(int) ticksToDegrees(90, Left))) // turn turret
+                        .waitSeconds(0.3)
+                        //.addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
                         .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_OUT)) // flip out claw linkage slide
                         .waitSeconds(0.6)
-                        .forward(23.5) // .forward(??) inches
-                        .UNSTABLE_addTemporalMarkerOffset(0, () -> lift(POWER_FULL, 940))//  lift up (motor power)
+                        .forward(63) // .forward(??) inches
+
                         // UNSTABLE_addTemporalMarkerOffset(-0.5, () -> mechCallBack) NOTE: the first parameter "offset" if negative
                         // is the amount of time the callback will preformed before the end of the trajectory it is attached to.
-                        .strafeLeft(38)
+                        //.strafeLeft(62)
+                        .UNSTABLE_addTemporalMarkerOffset(0, () -> lift(POWER_FULL, 1000))//  lift up (motor power)
+                        .addTemporalMarker(() -> turnTurret(0.25,(int) ticksToDegrees(90, Right))) // turn turret
                         .waitSeconds(1) // pause (??) a microsec to allow the lift to go all the way up
                         .addTemporalMarker(() -> dropCone(0)) // drop the cone, enter a count for each one
                         .waitSeconds(0.1) // pause (??) microseconds
-                        .strafeLeft(13)
+                        .back(14)
                         .waitSeconds(0.1) // pause (??) microseconds
                         .addTemporalMarker(() -> preSlideDown())
                         .waitSeconds(.5)
                         .addTemporalMarker(() -> slideDown())
-                        .waitSeconds(1)
+                        .turn(Math.toRadians(-90))
+                        .UNSTABLE_addTemporalMarkerOffset(-2, () -> turnTurret(0.45,(int) ticksToDegrees(280, Left)))//
+                        //.addTemporalMarker(() -> turnTurret(0.45,(int) ticksToDegrees(270, Left))) // turn turret
+                        .waitSeconds(.3)
+                        .back(24)
+                        .UNSTABLE_addTemporalMarkerOffset(-1.5, () -> lift(POWER_FULL, 80))//  lift up (motor power)
+                        .waitSeconds(.2)
+                        .addTemporalMarker(() -> pickCone(1))
+                        .waitSeconds(.2)
+                        .addTemporalMarker(() -> lift(POWER_FULL, 120))
+                        .back(30)
+                        .UNSTABLE_addTemporalMarkerOffset(-1, () -> turnTurret(0.45,(int) ticksToDegrees(280, Left)))//
                         .build();
                 break;
             case BLUE_RIGHT:
@@ -374,15 +391,16 @@ public class OneConeAuto extends LinearOpMode{
                         .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
                         .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_OUT)) // flip out claw linkage slide
                         .waitSeconds(0.6)
-                        .forward(20) // .forward(??) inches
-                        .UNSTABLE_addTemporalMarkerOffset(0, () -> lift(POWER_FULL, 940))//  lift up (motor power)
+                        //.forward(20) // .forward(??) inches
+
                         // UNSTABLE_addTemporalMarkerOffset(-0.5, () -> mechCallBack) NOTE: the first parameter "offset" if negative
                         // is the amount of time the callback will preformed before the end of the trajectory it is attached to.
-                        .strafeLeft(37)
+                        .strafeLeft(62)
+                        .UNSTABLE_addTemporalMarkerOffset(0, () -> lift(POWER_FULL, 940))//  lift up (motor power)
                         .waitSeconds(1) // pause (??) a microsec to allow the lift to go all the way up
                         .addTemporalMarker(() -> dropCone(0)) // drop the cone, enter a count for each one
                         .waitSeconds(0.1) // pause (??) microseconds
-                        .strafeLeft(13)
+                        .strafeRight(5)
                         .waitSeconds(0.1) // pause (??) microseconds
                         .addTemporalMarker(() -> preSlideDown())
                         .waitSeconds(.5)
@@ -440,17 +458,6 @@ public class OneConeAuto extends LinearOpMode{
 
         turret.setPower(speed);
 
-
-        while (turret.isBusy() && opModeIsActive()) {
-            telemetry.addData("Horizontal Slide", turret.getCurrentPosition());
-            telemetry.update();
-        }
-
-        turret.setPower(0);
-
-        //turret.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        //sleep(100);
     }
     //drive turret
     public void lift(double speed, int distance) {
@@ -481,6 +488,7 @@ public class OneConeAuto extends LinearOpMode{
                     case 1:
                         trajectoryParking = drive.trajectorySequenceBuilder(trajectoryAuto.end())
                                 .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                                .addTemporalMarker(() -> claw.setPosition(CLAW_CLOSED)) // claw closed
                                 .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
                                 .waitSeconds(0.2)
                                 .back(45)
@@ -490,6 +498,7 @@ public class OneConeAuto extends LinearOpMode{
                     case 2:
                         trajectoryParking = drive.trajectorySequenceBuilder(trajectoryAuto.end())
                                 .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                                .addTemporalMarker(() -> claw.setPosition(CLAW_CLOSED)) // claw closed
                                 .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
                                 .waitSeconds(0.2)
                                 .back(24)
@@ -499,6 +508,7 @@ public class OneConeAuto extends LinearOpMode{
                     case 3:
                         trajectoryParking = drive.trajectorySequenceBuilder(trajectoryAuto.end())
                                 .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                                .addTemporalMarker(() -> claw.setPosition(CLAW_CLOSED)) // claw closed
                                 .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
                                 .waitSeconds(0.2)
                                 .back(3)
@@ -512,6 +522,7 @@ public class OneConeAuto extends LinearOpMode{
                     case 1:
                         trajectoryParking = drive.trajectorySequenceBuilder(trajectoryAuto.end())
                                 .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                                .addTemporalMarker(() -> claw.setPosition(CLAW_CLOSED)) // claw closed
                                 .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
                                 .waitSeconds(0.2)
                                 .forward(43)
@@ -521,6 +532,7 @@ public class OneConeAuto extends LinearOpMode{
                     case 2:
                         trajectoryParking = drive.trajectorySequenceBuilder(trajectoryAuto.end())
                                 .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                                .addTemporalMarker(() -> claw.setPosition(CLAW_CLOSED)) // claw closed
                                 .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
                                 .waitSeconds(0.2)
                                 .forward(21)
@@ -530,6 +542,7 @@ public class OneConeAuto extends LinearOpMode{
                     case 3:
                         trajectoryParking = drive.trajectorySequenceBuilder(trajectoryAuto.end())
                                 .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                                .addTemporalMarker(() -> claw.setPosition(CLAW_CLOSED)) // claw closed
                                 .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
                                 .waitSeconds(0.2)
                                 .forward(.01)
@@ -543,6 +556,7 @@ public class OneConeAuto extends LinearOpMode{
                     case 1:
                         trajectoryParking = drive.trajectorySequenceBuilder(trajectoryAuto.end())
                                 .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                                .addTemporalMarker(() -> claw.setPosition(CLAW_CLOSED)) // claw closed
                                 .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
                                 .waitSeconds(0.2)
                                 .back(45)
@@ -552,6 +566,7 @@ public class OneConeAuto extends LinearOpMode{
                     case 2:
                         trajectoryParking = drive.trajectorySequenceBuilder(trajectoryAuto.end())
                                 .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                                .addTemporalMarker(() -> claw.setPosition(CLAW_CLOSED)) // claw closed
                                 .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
                                 .waitSeconds(0.2)
                                 .back(25)
@@ -561,6 +576,7 @@ public class OneConeAuto extends LinearOpMode{
                     case 3:
                         trajectoryParking = drive.trajectorySequenceBuilder(trajectoryAuto.end())
                                 .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                                .addTemporalMarker(() -> claw.setPosition(CLAW_CLOSED)) // claw closed
                                 .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
                                 .waitSeconds(0.2)
                                 .back(3)
@@ -574,6 +590,7 @@ public class OneConeAuto extends LinearOpMode{
                     case 1:
                         trajectoryParking = drive.trajectorySequenceBuilder(trajectoryAuto.end())
                                 .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                                .addTemporalMarker(() -> claw.setPosition(CLAW_CLOSED)) // claw closed
                                 .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
                                 .waitSeconds(0.2)
                                 .forward(44)
@@ -583,6 +600,7 @@ public class OneConeAuto extends LinearOpMode{
                     case 2:
                         trajectoryParking = drive.trajectorySequenceBuilder(trajectoryAuto.end())
                                 .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                                .addTemporalMarker(() -> claw.setPosition(CLAW_CLOSED)) // claw closed
                                 .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
                                 .waitSeconds(0.2)
                                 .forward(21)
@@ -592,6 +610,7 @@ public class OneConeAuto extends LinearOpMode{
                     case 3:
                         trajectoryParking = drive.trajectorySequenceBuilder(trajectoryAuto.end())
                                 .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
+                                .addTemporalMarker(() -> claw.setPosition(CLAW_CLOSED)) // claw closed
                                 .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
                                 .waitSeconds(0.2)
                                 .forward(.01)
@@ -613,7 +632,7 @@ public class OneConeAuto extends LinearOpMode{
         telemetry.update();
         //Run the trajectory built for Auto and Parking
         drive.followTrajectorySequence(trajectoryAuto);
-        drive.followTrajectorySequence(trajectoryParking);
+       // drive.followTrajectorySequence(trajectoryParking);
 
 
     }
@@ -621,8 +640,8 @@ public class OneConeAuto extends LinearOpMode{
     //Write a method which is able to pick the cone from the stack depending on your subsystems
     public void pickCone(int coneCount) {
         /*TODO: Add code to pick Cone 1 from stack*/
-    //    claw.setPosition(CLAW_CLOSED);
-        finger.setPosition(FINGER_DOWN);
+        claw.setPosition(CLAW_CLOSED);
+        //finger.setPosition(FINGER_DOWN);
         telemetry.addData("Picked Cone: Stack", coneCount);
         telemetry.update();
     }
@@ -630,8 +649,8 @@ public class OneConeAuto extends LinearOpMode{
     //Write a method which is able to drop the cone depending on your subsystems
     public void dropCone(int coneCount){
         /*TODO: Add code to drop cone on junction*/
-      //  claw.setPosition(CLAW_OPEN);
-        finger.setPosition(FINGER_UP);
+        claw.setPosition(CLAW_OPEN);
+        //finger.setPosition(FINGER_UP);
 
         if (coneCount == 0) {
             telemetry.addData("Dropped Cone", "Pre-loaded");

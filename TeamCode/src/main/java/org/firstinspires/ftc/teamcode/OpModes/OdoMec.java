@@ -41,13 +41,13 @@ public class OdoMec extends LinearOpMode {
     //Servos
     private Servo odoRetractor;
     private static final double ODO_RETRACT = 1; //.95
-    private static final double ODO_DOWN = .3;
+    private static final double ODO_DOWN = .25;
     private Servo flipOut;
     private static final double FLIPPED_IN = .29; //.95
     private static final double FLIPPED_OUT = .62;
-    private Servo finger;
-    private static final double FINGER_UP = 0.55;
-    private static final double FINGER_DOWN = 0.85;
+//    private Servo finger;
+//    private static final double FINGER_UP = 0.55;
+//    private static final double FINGER_DOWN = 0.85;
     private Servo claw;
     private static final double CLAW_CLOSED = 0.55;
     private static final double CLAW_OPEN = 0.05;
@@ -82,7 +82,7 @@ public class OdoMec extends LinearOpMode {
 
     //Magnetic Switches
     private RevTouchSensor slideMag;
-    private RevTouchSensor homeMag;
+//    private RevTouchSensor homeMag;
 
     //Distance sensor
     private ColorRangeSensor distance;
@@ -125,7 +125,7 @@ public class OdoMec extends LinearOpMode {
 
         //Magnetic switches
         slideMag = hardwareMap.get(RevTouchSensor.class, "slideMag");
-        homeMag = hardwareMap.get(RevTouchSensor.class, "homeMag");
+        //homeMag = hardwareMap.get(RevTouchSensor.class, "homeMag");
 
         //Distance sensor
        distance = hardwareMap.get(ColorRangeSensor.class, "Distance");
@@ -433,23 +433,23 @@ if (gamepad2.dpad_up) {
 
              */
             //IF NOT WORKIKNG, TAKE OUT "&& !gamepad2.start" BELOW
-            if (gamepad2.b && !gamepad2.right_bumper) {
-                while (!homeMag.isPressed()) {
+           // if (gamepad2.b && !gamepad2.right_bumper) {
+             //   while (!homeMag.isPressed()) {
                     //right
-                    if (turret.getCurrentPosition() < 0) {
-                        turret.setPower(0.3);
+               //     if (turret.getCurrentPosition() < 0) {
+                 //       turret.setPower(0.3);
                         //left
-                    }
-                    else if (turret.getCurrentPosition() > 0) {
-                        turret.setPower(-0.3);
+                   // }
+                   // else if (turret.getCurrentPosition() > 0) {
+                     //   turret.setPower(-0.3);
 
-                    }
-                }
+                   // }
+                //}
 
-                turret.setPower(0);
-                brake.setPosition(BRAKE_ON);
-                sleep(100);
-            }
+                //turret.setPower(0);
+                //brake.setPosition(BRAKE_ON);
+            //    sleep(100);
+            //}
 
 
 
