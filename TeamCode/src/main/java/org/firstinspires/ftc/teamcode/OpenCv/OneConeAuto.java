@@ -329,38 +329,87 @@ private Servo claw;
             case BLUE_LEFT:
                 trajectoryAuto = drive.trajectorySequenceBuilder(startPose)
                         //.addTemporalMarker(() -> turnTurret(0.25,(int) ticksToDegrees(90, Left))) // turn turret
-                        .addTemporalMarker(() -> turnTurret(0.25,(int) ticksToDegrees(90, Left))) // turn turret
+                        .addTemporalMarker(() -> turnTurret(0.15,(int) ticksToDegrees(90, Left))) // turn turret
                         .waitSeconds(0.3)
-                        //.addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
                         .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_OUT)) // flip out claw linkage slide
-                        .waitSeconds(0.6)
+                        .waitSeconds(0.3)
                         .forward(63) // .forward(??) inches
-
-                        // UNSTABLE_addTemporalMarkerOffset(-0.5, () -> mechCallBack) NOTE: the first parameter "offset" if negative
-                        // is the amount of time the callback will preformed before the end of the trajectory it is attached to.
-                        //.strafeLeft(62)
-                        .UNSTABLE_addTemporalMarkerOffset(0, () -> lift(POWER_FULL, 1000))//  lift up (motor power)
-                        .addTemporalMarker(() -> turnTurret(0.25,(int) ticksToDegrees(90, Right))) // turn turret
-                        .waitSeconds(1) // pause (??) a microsec to allow the lift to go all the way up
+                        .UNSTABLE_addTemporalMarkerOffset(-1.4, () -> lift(POWER_FULL, 1000))//  lift up (motor power)
+                        .addTemporalMarker(() -> turnTurret(0.20,(int) ticksToDegrees(90, Right))) // turn turret
+                        .waitSeconds(1.2) // pause (??) a microsec to allow the lift to go all the way up
                         .addTemporalMarker(() -> dropCone(0)) // drop the cone, enter a count for each one
                         .waitSeconds(0.1) // pause (??) microseconds
-                        .back(14)
+                        .back(13.5)
                         .waitSeconds(0.1) // pause (??) microseconds
                         .addTemporalMarker(() -> preSlideDown())
-                        .waitSeconds(.5)
+                        .waitSeconds(.1)
                         .addTemporalMarker(() -> slideDown())
                         .turn(Math.toRadians(-90))
-                        .UNSTABLE_addTemporalMarkerOffset(-2, () -> turnTurret(0.45,(int) ticksToDegrees(280, Left)))//
-                        //.addTemporalMarker(() -> turnTurret(0.45,(int) ticksToDegrees(270, Left))) // turn turret
-                        .waitSeconds(.3)
+                        .UNSTABLE_addTemporalMarkerOffset(-1.5, () -> turnTurret(0.45,(int) ticksToDegrees(280, Left)))//
+                        .waitSeconds(.2)
                         .back(24)
-                        .UNSTABLE_addTemporalMarkerOffset(-1.5, () -> lift(POWER_FULL, 80))//  lift up (motor power)
-                        .waitSeconds(.2)
+                        .UNSTABLE_addTemporalMarkerOffset(-1.5, () -> lift(POWER_FULL, 75))//  lift up (motor power)
+                        .waitSeconds(.1)
                         .addTemporalMarker(() -> pickCone(1))
+                        .waitSeconds(.4)
+                        .addTemporalMarker(() -> lift(POWER_FULL, 220))
+                        .waitSeconds(.1)
+                        .addTemporalMarker(() -> turnTurret(0.30,(int) ticksToDegrees(90, Right))) // turn turret
+                        .waitSeconds(.1)
+                        .forward(35)
+                        .UNSTABLE_addTemporalMarkerOffset(-1, () -> lift(POWER_FULL, 780))//  lift up (motor power)
+                        .strafeLeft(4)
+                        .waitSeconds(.3) // pause (??) a microsec to allow the lift to go all the way up
+                        .addTemporalMarker(() -> dropCone(1)) // drop the cone, enter a count for each one
+                        .waitSeconds(0.1) // pause (??) microseconds
+                        .strafeRight(4)
+                        .addTemporalMarker(() -> turnTurret(0.30,(int) ticksToDegrees(90, Left))) // turn turret
+                        .waitSeconds(0.1) // pause (??) microseconds
+                        .addTemporalMarker(() -> preSlideDown())
+                        .waitSeconds(.1)
+                        .back(35)
+                        .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> slideDown())//  lift up (motor power)
                         .waitSeconds(.2)
-                        .addTemporalMarker(() -> lift(POWER_FULL, 120))
-                        .back(30)
-                        .UNSTABLE_addTemporalMarkerOffset(-1, () -> turnTurret(0.45,(int) ticksToDegrees(280, Left)))//
+                        .addTemporalMarker(() -> pickCone(2))
+                        .waitSeconds(.3)
+                        .addTemporalMarker(() -> lift(POWER_FULL, 220))
+                        .waitSeconds(.1)
+                        .addTemporalMarker(() -> turnTurret(0.30,(int) ticksToDegrees(90, Right))) // turn turret
+                        .waitSeconds(.1)
+                        .forward(35)
+                        .UNSTABLE_addTemporalMarkerOffset(-1, () -> lift(POWER_FULL, 780))//  lift up (motor power)
+                        .strafeLeft(4)
+                        .waitSeconds(.1) // pause (??) a microsec to allow the lift to go all the way up
+                        .addTemporalMarker(() -> dropCone(2)) // drop the cone, enter a count for each one
+                        .waitSeconds(0.1) // pause (??) microseconds
+                        .strafeRight(4)
+                        .addTemporalMarker(() -> turnTurret(0.30,(int) ticksToDegrees(90, Left))) // turn turret
+                        .waitSeconds(0.1) // pause (??) microseconds
+                        .addTemporalMarker(() -> preSlideDown())
+                        .waitSeconds(.2)
+                        .back(35)
+                        .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> slideDown())//  lift up (motor power)
+                        .waitSeconds(.2)
+                        .addTemporalMarker(() -> pickCone(3))
+                        .waitSeconds(.3)
+                        .addTemporalMarker(() -> lift(POWER_FULL, 220))
+                        .waitSeconds(.1)
+                        .addTemporalMarker(() -> turnTurret(0.30,(int) ticksToDegrees(90, Right))) // turn turret
+                        .waitSeconds(.1)
+                        .forward(35)
+                        .UNSTABLE_addTemporalMarkerOffset(-1, () -> lift(POWER_FULL, 820))//  lift up (motor power)
+                        .strafeLeft(4)
+                        .waitSeconds(.1) // pause (??) a microsec to allow the lift to go all the way up
+                        .addTemporalMarker(() -> dropCone(3)) // drop the cone, enter a count for each one
+                        .waitSeconds(0.1) // pause (??) microseconds
+                        .strafeRight(4)
+                        .addTemporalMarker(() -> turnTurret(0.30,(int) ticksToDegrees(90, Left))) // turn turret
+                        .waitSeconds(0.1) // pause (??) microseconds
+                        .addTemporalMarker(() -> preSlideDown())
+                        .waitSeconds(.2)
+                        .back(35)
+                        .UNSTABLE_addTemporalMarkerOffset(-.5, () -> slideDown())//  lift up (motor power)
+                        .waitSeconds(.2)
                         .build();
                 break;
             case BLUE_RIGHT:
