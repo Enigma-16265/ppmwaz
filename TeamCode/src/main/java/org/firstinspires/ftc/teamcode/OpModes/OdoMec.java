@@ -43,8 +43,10 @@ public class OdoMec extends LinearOpMode {
     private static final double ODO_RETRACT = 1; //.95
     private static final double ODO_DOWN = .25;
     private Servo flipOut;
-    private static final double FLIPPED_IN = .29; //.95
-    private static final double FLIPPED_OUT = .62;
+    //private static final double FLIPPED_IN = .29; //.95
+    //private static final double FLIPPED_OUT = .62;
+    private static final double FLIPPED_IN = .50; //.95
+    private static final double FLIPPED_OUT = .02;
 //    private Servo finger;
 //    private static final double FINGER_UP = 0.55;
 //    private static final double FINGER_DOWN = 0.85;
