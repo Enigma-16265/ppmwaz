@@ -85,7 +85,7 @@ private Servo claw;
     private static final double CLAW_LINKAGE_ONE = 0.78;
     private Servo brake;
     private static final double BRAKE_OFF = 0.16;
-    private static final double BRAKE_ON = 0.28;
+    private static final double BRAKE_ON = 0.23;
     // initialize drive hardware
     private static int lastDirection;
 
