@@ -51,7 +51,7 @@ public class OdoMec extends LinearOpMode {
 //    private static final double FINGER_UP = 0.55;
 //    private static final double FINGER_DOWN = 0.85;
     private Servo claw;
-    private static final double CLAW_CLOSED = 0.55;
+    private static final double CLAW_CLOSED = 0.60;
     private static final double CLAW_OPEN = 0.05;
    // private static final double CLAW_CLOSED = 0.4;
    // private static final double CLAW_OPEN = 0.95;

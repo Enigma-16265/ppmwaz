@@ -72,10 +72,10 @@ public class OneConeAuto extends LinearOpMode{
 private Servo claw;
     private static final double LEFT_AUTO_DISTANCE = 27.5;
     private static final double LEFT_TURRET_DEGREES = 139;
-    private static final double RIGHT_TURRET_DEGREES = 138;
-    private static final double RIGHT_AUTO_DISTANCE = 27.5;
+    private static final double RIGHT_TURRET_DEGREES = 120;
+    private static final double RIGHT_AUTO_DISTANCE = 28;
     private static final double DROPCONEPAUSE = 1;
-    private static final double CLAW_CLOSED = 0.55;
+    private static final double CLAW_CLOSED = 0.60;
     private static final double CLAW_OPEN = 0.05;
     private Servo clawLinkage;
     private static final double CLAW_LINKAGE_FIVE = 0.5;
@@ -455,7 +455,7 @@ private Servo claw;
                 break;
             case BLUE_RIGHT:
                 trajectoryAuto = drive.trajectorySequenceBuilder(startPose)
-                        .forward(61.5) // .forward(??) inches
+                        .forward(62.5) // .forward(??) inches
                         .UNSTABLE_addTemporalMarkerOffset(-.4, () -> turnTurret(0.30,(int) ticksToDegrees(190, Left)))//  lift up (motor power)
                         .UNSTABLE_addTemporalMarkerOffset(-.5, () -> flipOut.setPosition(FLIPPED_OUT))//  lift up
                         .UNSTABLE_addTemporalMarkerOffset(-.6, () -> lift(POWER_FULL, 1000))//  lift up (motor power)
@@ -471,7 +471,7 @@ private Servo claw;
                         .addTemporalMarker(() -> slideDown())
                         .turn(Math.toRadians(85))
                         .waitSeconds(.2)
-                        .back(24.5)
+                        .back(24)
                         .UNSTABLE_addTemporalMarkerOffset(-1.5, () -> lift(POWER_FULL, 75))//  lift up (motor power)
                         .waitSeconds(.1)
                         .addTemporalMarker(() -> pickCone(1))
