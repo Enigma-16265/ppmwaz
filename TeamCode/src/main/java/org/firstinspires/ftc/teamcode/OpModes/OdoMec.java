@@ -332,7 +332,7 @@ public class OdoMec extends LinearOpMode {
 
             } else if (!gamepad2.right_bumper && gamepad2.y)  {  // Otherwise, stop the motor
                 claw.setPosition(CLAW_OPEN);
-
+                sleep(100);
             } else if (gamepad2.right_trigger > 0) {
                 claw.setPosition(CLAW_CLOSED);
 
@@ -360,6 +360,7 @@ public class OdoMec extends LinearOpMode {
             idle();
 
         }
+
 
     }
 
