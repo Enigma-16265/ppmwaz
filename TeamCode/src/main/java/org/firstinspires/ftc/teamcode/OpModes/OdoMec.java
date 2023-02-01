@@ -211,7 +211,7 @@ public class OdoMec extends LinearOpMode {
 
 
             if (!slideMag.isPressed()) {
-                if (gamepad2.dpad_up) { // Lift to top cone stack
+                if (gamepad2.dpad_up && gamepad2.left_stick_y <= 0) { // Lift to top cone stack
                     clawLinkage.setPosition(CLAW_LINKAGE_FIVE); // 0.53 - 5 cones, ALl the way up
                     leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -224,7 +224,7 @@ public class OdoMec extends LinearOpMode {
 
                     leftSlide.setPower(1);
                     rightSlide.setPower(1);
-                } else if (gamepad2.dpad_left) { // Lift to small junction
+                } else if (gamepad2.dpad_left && gamepad2.left_stick_y <= 0) { // Lift to small junction
                     clawLinkage.setPosition(CLAW_LINKAGE_FIVE);
                     leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -237,7 +237,7 @@ public class OdoMec extends LinearOpMode {
 
                     leftSlide.setPower(1);
                     rightSlide.setPower(1);
-                } else if (gamepad2.dpad_down) { // Lift to med junction
+                } else if (gamepad2.dpad_down && gamepad2.left_stick_y <= 0) { // Lift to med junction
                     clawLinkage.setPosition(CLAW_LINKAGE_FIVE);
                     leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -250,7 +250,7 @@ public class OdoMec extends LinearOpMode {
 
                     leftSlide.setPower(1);
                     rightSlide.setPower(1);
-                }  else if (gamepad2.dpad_right) { // Lift to tall junction
+                }  else if (gamepad2.dpad_right && gamepad2.left_stick_y <= 0) { // Lift to tall junction
                     clawLinkage.setPosition(CLAW_LINKAGE_FIVE);
                     leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
