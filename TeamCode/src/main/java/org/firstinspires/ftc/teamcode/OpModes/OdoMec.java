@@ -57,8 +57,8 @@ public class OdoMec extends LinearOpMode {
    // private static final double CLAW_OPEN = 0.95;
     private Servo clawLinkage;
     private static final double CLAW_LINKAGE_FIVE = 0.5;
-    private static final double CLAW_LINKAGE_FOUR = 0.57;
-    private static final double CLAW_LINKAGE_THREE = 0.63;
+    private static final double CLAW_LINKAGE_FOUR = 0.54;
+    private static final double CLAW_LINKAGE_THREE = 0.62;
     private static final double CLAW_LINKAGE_TWO = 0.7;
     private static final double CLAW_LINKAGE_ONE = 0.78;
     private Servo brake;
@@ -284,7 +284,7 @@ if (gamepad2.dpad_up) {
                 clawLinkage.setPosition(CLAW_LINKAGE_THREE);
             } else if (gamepad2.right_bumper && gamepad2.a) { // 0.7 - 2 cones
                 clawLinkage.setPosition(CLAW_LINKAGE_TWO);
-            } else if (gamepad2.right_bumper && gamepad2.x) { // 0.87 1 cone, All the way down
+            } else if (gamepad2.right_bumper && gamepad2.x) { // 0.87 1 cone, All the way downLift
                 clawLinkage.setPosition(CLAW_LINKAGE_ONE);
             } else if (gamepad2.left_bumper) {
                 clawLinkage.setPosition(CLAW_LINKAGE_FIVE); // 0.53 - 5 cones, ALl the way up
