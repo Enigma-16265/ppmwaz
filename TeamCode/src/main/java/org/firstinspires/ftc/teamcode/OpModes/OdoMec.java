@@ -41,20 +41,12 @@ public class OdoMec extends LinearOpMode {
     //Servos
     private Servo odoRetractor;
     private static final double ODO_RETRACT = 1; //.95
-    private static final double ODO_DOWN = .25;
     private Servo flipOut;
-    //private static final double FLIPPED_IN = .29; //.95
-    //private static final double FLIPPED_OUT = .62;
     private static final double FLIPPED_IN = .50; //.95
     private static final double FLIPPED_OUT = .02;
-//    private Servo finger;
-//    private static final double FINGER_UP = 0.55;
-//    private static final double FINGER_DOWN = 0.85;
     private Servo claw;
     private static final double CLAW_CLOSED = 0.60;
     private static final double CLAW_OPEN = 0.05;
-   // private static final double CLAW_CLOSED = 0.4;
-   // private static final double CLAW_OPEN = 0.95;
     private Servo clawLinkage;
     private static final double CLAW_LINKAGE_FIVE = 0.5;
     private static final double CLAW_LINKAGE_FOUR = 0.54;
@@ -66,17 +58,6 @@ public class OdoMec extends LinearOpMode {
     private static final double BRAKE_ON = 0.28;
 
     private static final double POWER_FULL = 1;
-    private static final double POWER_NINETY = 0.9;
-    private static final double POWER_EIGHTY = 0.8;
-    private static final double POWER_SEVENTY = 0.7;
-    private static final double POWER_SIXTY = 0.6;
-    private static final double POWER_FIFTY = 0.5;
-    private static final double POWER_FORTY = 0.4;
-    private static final double POWER_THIRTY = 0.3;
-    private static final double POWER_TWENTY = 0.2;
-    private static final double POWER_TEN = 0.1;
-    private static final double POWER_FIVE = 0.05;
-    private static final double LIFT_DOWN = -0.3;
 
     private static int lastDirection;
 
@@ -84,7 +65,6 @@ public class OdoMec extends LinearOpMode {
 
     //Magnetic Switches
     private RevTouchSensor slideMag;
-//    private RevTouchSensor homeMag;
 
     //Distance sensor
     private ColorRangeSensor distance;
@@ -120,17 +100,15 @@ public class OdoMec extends LinearOpMode {
         //Servos
         odoRetractor = hardwareMap.get(Servo.class, "odoRetractor");
         flipOut = hardwareMap.get(Servo.class, "flipOut");
-        //finger = hardwareMap.get(Servo.class, "finger");
         claw = hardwareMap.get(Servo.class, "claw");
         clawLinkage = hardwareMap.get(Servo.class, "clawLinkage");
         brake = hardwareMap.get(Servo.class, "brake");
 
         //Magnetic switches
         slideMag = hardwareMap.get(RevTouchSensor.class, "slideMag");
-        //homeMag = hardwareMap.get(RevTouchSensor.class, "homeMag");
 
         //Distance sensor
-       distance = hardwareMap.get(ColorRangeSensor.class, "Distance");
+        distance = hardwareMap.get(ColorRangeSensor.class, "Distance");
 
         rightFront.setDirection(DcMotor.Direction.REVERSE);
         leftFront.setDirection(DcMotor.Direction.FORWARD);
@@ -174,9 +152,8 @@ public class OdoMec extends LinearOpMode {
         flipper_pos = true;
         clawLinkage.setPosition(CLAW_LINKAGE_FIVE);
         brake.setPosition(BRAKE_OFF);
-        //finger.setPosition(FINGER_UP);
 
-// Set Motor Power
+        // Set Turret Motor Power
         turret.setPower(0);
 
         telemetry.addData("Status", "Mike Wazowski is ready to run!");
@@ -212,7 +189,6 @@ public class OdoMec extends LinearOpMode {
                 leftRearPower = Range.clip(leftRearPower, -0.8, 0.8);
             }
 
-
             rightFront.setPower(rightFrontPower);
             leftFront.setPower(leftFrontPower);
             rightRear.setPower(rightRearPower);
@@ -234,27 +210,72 @@ public class OdoMec extends LinearOpMode {
             double motorVerticalLiftLeftPower = -gamepad2.left_stick_y;
 
 
-            if (!slideMag.isPressed()) { // SLIDE_UP
-                motorVerticalLiftRightPower = Range.clip(motorVerticalLiftRightPower, -0.6, 1); // was 1
-                motorVerticalLiftLeftPower = Range.clip(motorVerticalLiftLeftPower, -0.6, 1); //-0.90, .93)
-                rightSlide.setPower(motorVerticalLiftRightPower);
-                leftSlide.setPower(motorVerticalLiftLeftPower);
+            if (!slideMag.isPressed()) {
+                if (gamepad2.dpad_up) { // Lift to top cone stack
+                    clawLinkage.setPosition(CLAW_LINKAGE_FIVE); // 0.53 - 5 cones, ALl the way up
+                    leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                    leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                    leftSlide.setTargetPosition(75);
+                    rightSlide.setTargetPosition(75);
+
+                    leftSlide.setPower(1);
+                    rightSlide.setPower(1);
+                } else if (gamepad2.dpad_left) { // Lift to small junction
+                    clawLinkage.setPosition(CLAW_LINKAGE_FIVE);
+                    leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                    leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                    leftSlide.setTargetPosition(240);
+                    rightSlide.setTargetPosition(240);
+
+                    leftSlide.setPower(1);
+                    rightSlide.setPower(1);
+                } else if (gamepad2.dpad_down) { // Lift to med junction
+                    clawLinkage.setPosition(CLAW_LINKAGE_FIVE);
+                    leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                    leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                    leftSlide.setTargetPosition(535);
+                    rightSlide.setTargetPosition(535);
+
+                    leftSlide.setPower(1);
+                    rightSlide.setPower(1);
+                }  else if (gamepad2.dpad_right) { // Lift to tall junction
+                    clawLinkage.setPosition(CLAW_LINKAGE_FIVE);
+                    leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                    leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                    leftSlide.setTargetPosition(980);
+                    rightSlide.setTargetPosition(980);
+
+                    leftSlide.setPower(1);
+                    rightSlide.setPower(1);
+                } else {
+                    // SLIDE_UP with left joy stick
+                    motorVerticalLiftRightPower = Range.clip(motorVerticalLiftRightPower, -0.6, 1); // was 1
+                    motorVerticalLiftLeftPower = Range.clip(motorVerticalLiftLeftPower, -0.6, 1); //-0.90, .93)
+                    rightSlide.setPower(motorVerticalLiftRightPower);
+                    leftSlide.setPower(motorVerticalLiftLeftPower);
+                }
             } else { // SLIDE_DOWN
                 motorVerticalLiftRightPower = Range.clip(motorVerticalLiftRightPower, 0, 1);// 1
                 motorVerticalLiftLeftPower = Range.clip(motorVerticalLiftLeftPower, 0, 1);// .93
                 rightSlide.setPower(motorVerticalLiftRightPower);
                 leftSlide.setPower(motorVerticalLiftLeftPower);
             }
-
-
-
-/*
-if (gamepad2.dpad_up) {
-    lift(POWER_FULL,940);
-}
-
-
- */
 
             // Turret Brake
             if (gamepad2.left_trigger == 1) {
@@ -263,14 +284,7 @@ if (gamepad2.dpad_up) {
                 brake.setPosition(BRAKE_OFF);
             }
 
-
-            /*
-                private static final double CLAW_LINKAGE_FIVE = 0.5;
-    private static final double CLAW_LINKAGE_FOUR = 0.57;
-    private static final double CLAW_LINKAGE_THREE = 0.63;
-    private static final double CLAW_LINKAGE_TWO = 0.7;
-    private static final double CLAW_LINKAGE_ONE = 0.78;
-             */
+            // Claw Linkage Lift
             if (gamepad1.left_bumper) {
                 clawLinkage.setPosition(CLAW_LINKAGE_FIVE); // 0.53 - 5 cones, ALl the way up
             } else if (gamepad1.right_bumper) {
@@ -294,13 +308,12 @@ if (gamepad2.dpad_up) {
             telemetry.addData("TurretPos", turret.getCurrentPosition());
             telemetry.update();
 
+            // Odometry retractor mechanism
             if (gamepad1.a) {
                 odoRetractor.setPosition(0.7);
             }
 
-
-
-
+            // Flip in Flip out grabber mechanism
             if (gamepad2.x && !gamepad2.right_bumper){
                 flipOut.setPosition(FLIPPED_OUT);
                 flipper_pos = false;
@@ -310,10 +323,9 @@ if (gamepad2.dpad_up) {
                 claw.setPosition(CLAW_CLOSED);
                 flipOut.setPosition(FLIPPED_IN);
                 flipper_pos = true;
-
             }
 
-            // Auto Claw
+            // Auto/Manual Claw
 
             if (distance.getDistance(DistanceUnit.MM) < 40 && (!gamepad2.y || gamepad2.right_trigger > 0) ) {
                 claw.setPosition(CLAW_CLOSED);
@@ -330,8 +342,81 @@ if (gamepad2.dpad_up) {
             } else {
                 claw.setPosition(CLAW_CLOSED);
             }
-            //else
 
+
+            //turret
+            double motorTurretPower = -gamepad2.right_stick_x;
+
+            if (gamepad2.right_stick_x > 0) {                   // + 0.1
+                turret.setPower(Range.clip(gamepad2.right_stick_x, 0, 0.35));
+                lastDirection = 1;
+            } else if (gamepad2.right_stick_x < 0) {
+                lastDirection = -1;                               // - 0.1
+                turret.setPower(Range.clip(gamepad2.right_stick_x, -0.35, 0));
+            } else {
+                turret.setPower(0);
+            }
+            telemetry.update();
+            idle();
+
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // CODE THAT DIDN'T MAKE THE CUT, saved for reference
 
 /*
             if (gamepad2.right_trigger > 0) {
@@ -352,11 +437,8 @@ if (gamepad2.dpad_up) {
 
 
 
-            //horizontal slide
-            double motorTurretPower = -gamepad2.right_stick_x;
 
-
-/*
+            /*
             if (!homeMag.isPressed()) {
                 if (motorTurretPower != 0 && (motorTurretPower < .25 || motorTurretPower > -.25)){
                     motorTurretPower = motorTurretPower + 0.3;
@@ -371,7 +453,7 @@ if (gamepad2.dpad_up) {
             }
 */
 
-            //telemetry.update();
+    //telemetry.update();
             /*
             if (gamepad2.dpad_left) {
                 turret.setPower(0.4);
@@ -382,18 +464,7 @@ if (gamepad2.dpad_up) {
             }
 
              */
-            if (gamepad2.right_stick_x > 0) {                   // + 0.1
-                turret.setPower(Range.clip(gamepad2.right_stick_x, 0, 0.35));
-                lastDirection = 1;
-            } else if (gamepad2.right_stick_x < 0) {
-                lastDirection = -1;                               // - 0.1
-                turret.setPower(Range.clip(gamepad2.right_stick_x, -0.35, 0));
-            } else {
-                turret.setPower(0);
-            }
-
-
-            //puts the turret to the "home" based on how close it is to the home position
+    //puts the turret to the "home" based on how close it is to the home position
             /*
             if (gamepad2.b && !gamepad2.right_bumper) {
                 while (!homeMag.isPressed()) {
@@ -434,41 +505,35 @@ if (gamepad2.dpad_up) {
             }
 
              */
-            //IF NOT WORKIKNG, TAKE OUT "&& !gamepad2.start" BELOW
-           // if (gamepad2.b && !gamepad2.right_bumper) {
-             //   while (!homeMag.isPressed()) {
-                    //right
-               //     if (turret.getCurrentPosition() < 0) {
-                 //       turret.setPower(0.3);
-                        //left
-                   // }
-                   // else if (turret.getCurrentPosition() > 0) {
-                     //   turret.setPower(-0.3);
+    //IF NOT WORKIKNG, TAKE OUT "&& !gamepad2.start" BELOW
+    // if (gamepad2.b && !gamepad2.right_bumper) {
+    //   while (!homeMag.isPressed()) {
+    //right
+    //     if (turret.getCurrentPosition() < 0) {
+    //       turret.setPower(0.3);
+    //left
+    // }
+    // else if (turret.getCurrentPosition() > 0) {
+    //   turret.setPower(-0.3);
 
-                   // }
-                //}
+    // }
+    //}
 
-                //turret.setPower(0);
-                //brake.setPosition(BRAKE_ON);
-            //    sleep(100);
-            //}
-
-
-
-
-            //telemetry.addData("LastDirection",lastDirection);
+    //turret.setPower(0);
+    //brake.setPosition(BRAKE_ON);
+    //    sleep(100);
+    //}
 
 
 
 
-           // telemetry.addData("Encoder value", turret.getCurrentPosition());
+    //telemetry.addData("LastDirection",lastDirection);
 
-            telemetry.update();
-            idle();
 
-        }
 
-    }
+
+    // telemetry.addData("Encoder value", turret.getCurrentPosition());
+
     /*
     public void lift(double speed, int distance) {
 
