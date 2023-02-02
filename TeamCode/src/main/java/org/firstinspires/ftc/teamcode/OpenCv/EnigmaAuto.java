@@ -167,7 +167,6 @@ public class EnigmaAuto extends LinearOpMode{
         flipper_pos = true;
         brake.setPosition(BRAKE_OFF);
 
-        //initPose = new Pose2d();
         // Vision OpenCV / Apriltags
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
@@ -342,7 +341,7 @@ public class EnigmaAuto extends LinearOpMode{
                         .waitSeconds(.4) // pause (??) microseconds
                         .forward(LEFT_AUTO_DISTANCE) // drive forward to the medium junction
                         .UNSTABLE_addTemporalMarkerOffset(-1.1, () -> lift(POWER_FULL, 385))//  lift up (motor power)
-                        .waitSeconds(.4) // pause (??) a microseconds
+                        .waitSeconds(.7) // pause (??) a microseconds
                         .addTemporalMarker(() -> dropCone(1)) // drop cone 1
                         .waitSeconds(0.1) // pause (??) microseconds
                         .addTemporalMarker(() -> turnTurret(0.35,(int) ticksToDegrees(100, Right))) // turn turret facing the cone stack
@@ -356,8 +355,8 @@ public class EnigmaAuto extends LinearOpMode{
                         .addTemporalMarker(() -> turnTurret(0.35,(int) ticksToDegrees(95, Left))) // turn the turret facing the medium junction
                         .waitSeconds(.4) // pause (??) microseconds
                         .forward(LEFT_AUTO_DISTANCE) // drive forward to the medium junction
-                        .UNSTABLE_addTemporalMarkerOffset(-1.1, () -> lift(POWER_FULL, 535))//  lift up (motor power)
-                        .waitSeconds(.4) // pause (??) microseconds
+                        .UNSTABLE_addTemporalMarkerOffset(-1.1, () -> lift(POWER_FULL, 485))//  lift up (motor power)
+                        .waitSeconds(.7) // pause (??) microseconds
                         .addTemporalMarker(() -> dropCone(2)) // drop the cone, enter a count for each one
                         .waitSeconds(0.1) // pause (??) microseconds
                         .addTemporalMarker(() -> turnTurret(0.35,(int) ticksToDegrees(90, Right))) // turn turret facing the cone stack
@@ -375,14 +374,15 @@ public class EnigmaAuto extends LinearOpMode{
                         .waitSeconds(.4) // pause (??) microseconds
                         .forward(LEFT_AUTO_DISTANCE) // drive forward to the medium junction
                         .UNSTABLE_addTemporalMarkerOffset(-.7, () -> clawLinkage.setPosition(CLAW_LINKAGE_FIVE))//  lift up (motor power)
-                        .UNSTABLE_addTemporalMarkerOffset(-1.1, () -> lift(POWER_FULL, 535))//  lift up (motor power)
-                        .waitSeconds(.4) // pause (??) microseconds
+                        .UNSTABLE_addTemporalMarkerOffset(-1.1, () -> lift(POWER_FULL, 505))//  lift up (motor power)
+                        .waitSeconds(.7) // pause (??) microseconds
                         .addTemporalMarker(() -> dropCone(3)) // drop the cone, enter a count for each one
                         .waitSeconds(0.1) // pause (??) microseconds
                         .addTemporalMarker(() -> turnTurret(0.35,(int) ticksToDegrees(90, Right))) // turn turret facing the cone stack
                         .waitSeconds(0.3) // pause (??) microseconds
                         .addTemporalMarker(() -> slideDown()) // bring the lift down
                         .waitSeconds(.1) // pause (??) microseconds
+                        /* // TODO FOURTH CONE
                         .back(LEFT_AUTO_DISTANCE) // drive backwards to the cone stack
                         .UNSTABLE_addTemporalMarkerOffset(-.7, () -> clawLinkage.setPosition(CLAW_LINKAGE_TWO))//  lift up (motor power)
                         .waitSeconds(.1) // pause (??) microseconds
@@ -401,6 +401,7 @@ public class EnigmaAuto extends LinearOpMode{
                         .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // turn turret
                         .addTemporalMarker(() -> slideDown()) // bring the lift down
                         .waitSeconds(.2) // pause (??) microseconds
+                         */
                         .build(); // build trajectory
                 break;
             case RIGHT:
@@ -541,7 +542,7 @@ public class EnigmaAuto extends LinearOpMode{
     public void runAutoAndParking(){
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         telemetry.setAutoClear(false);
-        telemetry.addData("Running ENIGMA OneCone Autonomous Mode for Team:","16265");
+        telemetry.addData("Running ENIGMA Auto Mode for Team:","16265");
         telemetry.addData("---------------------------------------","");
         telemetry.update();
         //Run the trajectory built for Auto and Parking
