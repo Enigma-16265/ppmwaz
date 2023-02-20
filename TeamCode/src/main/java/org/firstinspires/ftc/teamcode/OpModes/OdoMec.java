@@ -42,17 +42,20 @@ public class OdoMec extends LinearOpMode {
     private Servo odoRetractor;
     private static final double ODO_RETRACT = 1; //.95
     private Servo flipOut;
-    private static final double FLIPPED_IN = .50; //.95
-    private static final double FLIPPED_OUT = .02;
+    private static final double FLIPPED_IN = .22; //.95
+    private static final double FLIPPED_ANGLE = .7; //.95
+    private static final double FLIPPED_OUT = .8;
     private Servo claw;
-    private static final double CLAW_CLOSED = 0.60;
+    private static final double CLAW_CLOSED = 0.65;
     private static final double CLAW_OPEN = 0.05;
     private Servo clawLinkage;
-    private static final double CLAW_LINKAGE_FIVE = 0.5;
-    private static final double CLAW_LINKAGE_FOUR = 0.54;
-    private static final double CLAW_LINKAGE_THREE = 0.62;
-    private static final double CLAW_LINKAGE_TWO = 0.7;
-    private static final double CLAW_LINKAGE_ONE = 0.78;
+    private static final double CLAW_LINKAGE_UP = 0.25;
+    private static final double CLAW_LINKAGE_FIVE = 0.37;
+    private static final double CLAW_LINKAGE_FOUR = 0.395;
+    private static final double CLAW_LINKAGE_THREE = 0.42;
+    private static final double CLAW_LINKAGE_TWO = 0.445;
+    private static final double CLAW_LINKAGE_ONE = 0.48;
+
     private Servo brake;
     private static final double BRAKE_OFF = 0.16;
     private static final double BRAKE_ON = 0.28;
@@ -150,7 +153,7 @@ public class OdoMec extends LinearOpMode {
         claw.setPosition(CLAW_CLOSED);
         flipOut.setPosition(FLIPPED_IN);
         flipper_pos = true;
-        clawLinkage.setPosition(CLAW_LINKAGE_FIVE);
+        clawLinkage.setPosition(CLAW_LINKAGE_ONE);
         brake.setPosition(BRAKE_OFF);
 
         // Set Turret Motor Power
@@ -230,7 +233,7 @@ public class OdoMec extends LinearOpMode {
 
             // Claw Linkage Lift
             if (gamepad1.left_bumper) {
-                clawLinkage.setPosition(CLAW_LINKAGE_FIVE); // 0.53 - 5 cones, ALl the way up
+                clawLinkage.setPosition(CLAW_LINKAGE_UP); // 0.53 - 5 cones, ALl the way up
             } else if (gamepad1.right_bumper) {
                 clawLinkage.setPosition(CLAW_LINKAGE_ONE); // 0.87 - 1 cone, ALl the way down
             }
@@ -257,6 +260,12 @@ public class OdoMec extends LinearOpMode {
                 odoRetractor.setPosition(0.7);
             }
 
+            if (gamepad2.dpad_up) {
+                flipOut.setPosition(FLIPPED_ANGLE);
+            } else if (gamepad2.dpad_down) {
+                flipOut.setPosition(FLIPPED_OUT);
+            }
+
             // Flip in Flip out grabber mechanism
             if (gamepad2.x && !gamepad2.right_bumper){
                 flipOut.setPosition(FLIPPED_OUT);
@@ -271,18 +280,19 @@ public class OdoMec extends LinearOpMode {
 
             // Auto/Manual Claw
 
-            if (distance.getDistance(DistanceUnit.MM) < 40 && (!gamepad2.y || gamepad2.right_trigger > 0) ) {
+            if (distance.getDistance(DistanceUnit.MM) < 50 && (!gamepad2.y || gamepad2.right_trigger > 0) ) {
                 claw.setPosition(CLAW_CLOSED);
 
             } else if (!gamepad2.right_bumper && gamepad2.y)  {  // Otherwise, stop the motor
                 claw.setPosition(CLAW_OPEN);
+                flipOut.setPosition(FLIPPED_OUT);
                 sleep(100);
             } else if (gamepad2.right_trigger > 0) {
                 claw.setPosition(CLAW_CLOSED);
 
             } else if (!flipper_pos) {
                 claw.setPosition(CLAW_OPEN);
-
+                //flipOut.setPosition(FLIPPED_OUT);
             } else {
                 claw.setPosition(CLAW_CLOSED);
             }
