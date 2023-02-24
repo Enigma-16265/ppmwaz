@@ -46,7 +46,7 @@ public class OdoMec extends LinearOpMode {
     private static final double FLIPPED_ANGLE = .7; //.95
     private static final double FLIPPED_OUT = .8;
     private Servo claw;
-    private static final double CLAW_CLOSED = 0.65;
+    private static final double CLAW_CLOSED = 0.7;
     private static final double CLAW_OPEN = 0.05;
     private Servo clawLinkage;
     private static final double CLAW_LINKAGE_UP = 0.25;
@@ -65,6 +65,7 @@ public class OdoMec extends LinearOpMode {
     private static int lastDirection;
 
     private static boolean flipper_pos;
+    private static boolean claw_pos;
 
     //Magnetic Switches
     private RevTouchSensor slideMag;
@@ -153,6 +154,7 @@ public class OdoMec extends LinearOpMode {
         claw.setPosition(CLAW_CLOSED);
         flipOut.setPosition(FLIPPED_IN);
         flipper_pos = true;
+        claw_pos = true;
         clawLinkage.setPosition(CLAW_LINKAGE_ONE);
         brake.setPosition(BRAKE_OFF);
 
@@ -267,34 +269,47 @@ public class OdoMec extends LinearOpMode {
             }
 
             // Flip in Flip out grabber mechanism
+            /*if (gamepad2.dpad_left && !gamepad2.right_bumper){
+                flipOut.setPosition(FLIPPED_OUT);
+                flipper_pos = false;
+                //sleep(200);
+                //claw.setPosition(CLAW_OPEN);
+                claw_pos = false;
+            } else */
             if (gamepad2.x && !gamepad2.right_bumper){
+
                 flipOut.setPosition(FLIPPED_OUT);
                 flipper_pos = false;
                 sleep(200);
                 claw.setPosition(CLAW_OPEN);
+                claw_pos = false;
             } else if (gamepad2.a && !gamepad2.right_bumper) {
                 claw.setPosition(CLAW_CLOSED);
                 flipOut.setPosition(FLIPPED_IN);
                 flipper_pos = true;
+                claw_pos = true;
             }
 
             // Auto/Manual Claw
 
-            if (distance.getDistance(DistanceUnit.MM) < 50 && (!gamepad2.y || gamepad2.right_trigger > 0) ) {
+            if (distance.getDistance(DistanceUnit.MM) < 40 && (!claw_pos || !gamepad2.y || gamepad2.right_trigger > 0) ) {
                 claw.setPosition(CLAW_CLOSED);
-
+                claw_pos = true;
             } else if (!gamepad2.right_bumper && gamepad2.y)  {  // Otherwise, stop the motor
                 claw.setPosition(CLAW_OPEN);
+                claw_pos = false;
                 flipOut.setPosition(FLIPPED_OUT);
                 sleep(100);
             } else if (gamepad2.right_trigger > 0) {
                 claw.setPosition(CLAW_CLOSED);
-
+                claw_pos = true;
             } else if (!flipper_pos) {
                 claw.setPosition(CLAW_OPEN);
+                claw_pos = false;
                 //flipOut.setPosition(FLIPPED_OUT);
             } else {
                 claw.setPosition(CLAW_CLOSED);
+                claw_pos = true;
             }
 
 

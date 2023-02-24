@@ -62,24 +62,25 @@ public class EnigmaAuto extends LinearOpMode{
     // declare all of the servo and motor objects
     private Servo odoRetractor;
     private Servo flipOut;
-    private static final double FLIPPED_IN = .50; //.95
-    private static final double FLIPPED_OUT = .02;
 
-    private Servo claw;
     private static final double LEFT_AUTO_DISTANCE = 33.25;
     private static final double LEFT_TURRET_DEGREES = 139;
     private static final double RIGHT_TURRET_DEGREES = 120;
     private static final double RIGHT_AUTO_DISTANCE = 28;
     private static final double DROPCONEPAUSE = 1;
-    private static final double CLAW_CLOSED = 0.60;
+    private static final double FLIPPED_IN = .22; //.95
+    private static final double FLIPPED_ANGLE = .7; //.95
+    private static final double FLIPPED_OUT = .8;
+    private Servo claw;
+    private static final double CLAW_CLOSED = 0.7;
     private static final double CLAW_OPEN = 0.05;
     private Servo clawLinkage;
-    private static final double CLAW_LINKAGE_FIVE = 0.5;
-    private static final double CLAW_LINKAGE_FOUR = 0.57;
-    private static final double CLAW_LINKAGE_THREE = 0.63;
-    private static final double CLAW_LINKAGE_TWO = 0.7;
-    private static final double CLAW_LINKAGE_ONE = 0.78;
-    private Servo brake;
+    private static final double CLAW_LINKAGE_UP = 0.25;
+    private static final double CLAW_LINKAGE_FIVE = 0.37;
+    private static final double CLAW_LINKAGE_FOUR = 0.395;
+    private static final double CLAW_LINKAGE_THREE = 0.42;
+    private static final double CLAW_LINKAGE_TWO = 0.445;
+    private static final double CLAW_LINKAGE_ONE = 0.48;    private Servo brake;
     private static final double BRAKE_OFF = 0.16;
     private static final double BRAKE_ON = 0.23;
     // initialize drive hardware
@@ -161,7 +162,7 @@ public class EnigmaAuto extends LinearOpMode{
 
         //Set servo positions
         odoRetractor.setPosition(0.1);
-        clawLinkage.setPosition(CLAW_LINKAGE_FIVE);
+        clawLinkage.setPosition(CLAW_LINKAGE_ONE);
         claw.setPosition(CLAW_CLOSED);
         flipOut.setPosition(FLIPPED_IN);
         flipper_pos = true;
@@ -317,6 +318,22 @@ public class EnigmaAuto extends LinearOpMode{
             case LEFT:
                 trajectoryAuto = drive.trajectorySequenceBuilder(startPose)
                         .forward(40) // .forward(??) inches to medium junction
+                        .UNSTABLE_addTemporalMarkerOffset(-.2, () -> brake.setPosition(BRAKE_ON))//  set brake on
+                        .UNSTABLE_addTemporalMarkerOffset(-.3, () -> lift(POWER_FULL, 390))//  lift up (motor power)
+                        .UNSTABLE_addTemporalMarkerOffset(-.35, () -> flipOut.setPosition(FLIPPED_OUT))//  set mechanism to be flipped out
+                        .waitSeconds(.7) // pause (??) a microseconds
+                        .addTemporalMarker(() -> dropCone(0)) // drop the preloaded cone, enter a count for each one
+                        .waitSeconds(0.1) // pause (??) microseconds
+                        .forward(10) // drive forward to line up with the cone stack
+                        .UNSTABLE_addTemporalMarkerOffset(-.4, () -> brake.setPosition(BRAKE_OFF))//  set brake off
+                        .UNSTABLE_addTemporalMarkerOffset(-.8, () -> turnTurret(0.35,(int) ticksToDegrees(95, Right)))// turn the turret to the rear of the robot facing the cone stack
+                        .waitSeconds(0.1) // pause (??) microseconds
+                        .addTemporalMarker(() -> slideDown(1)) // bring the lift down
+                        .turn(Math.toRadians(-90)) // turn the robot so the rear is facing the cone stack
+                        .waitSeconds(.1) // pause (??) microseconds
+                /*
+                trajectoryAuto = drive.trajectorySequenceBuilder(startPose)
+                        .forward(40) // .forward(??) inches to medium junction
                         .UNSTABLE_addTemporalMarkerOffset(-.3, () -> brake.setPosition(BRAKE_ON))//  set brake on
                         .UNSTABLE_addTemporalMarkerOffset(-.4, () -> flipOut.setPosition(FLIPPED_OUT))//  set mechanism to be flipped out
                         .UNSTABLE_addTemporalMarkerOffset(-.5, () -> lift(POWER_FULL, 680))//  lift up (motor power)
@@ -405,6 +422,7 @@ public class EnigmaAuto extends LinearOpMode{
                         .build(); // build trajectory
                 break;
             case RIGHT:
+                /*
                 trajectoryAuto = drive.trajectorySequenceBuilder(startPose)
                         .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
                         .forward(40) // .forward(??) inches to medium junction
@@ -479,6 +497,8 @@ public class EnigmaAuto extends LinearOpMode{
                         .waitSeconds(.1) // pause (??) microseconds
 
                         .build();
+
+                 */
                 break;
 
         }
@@ -511,7 +531,7 @@ public class EnigmaAuto extends LinearOpMode{
     }
     //drive lift
     public void lift(double speed, int distance) {
-
+clawLinkage.setPosition(CLAW_LINKAGE_UP);
         leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftSlide.setTargetPosition(distance);
@@ -537,7 +557,7 @@ public class EnigmaAuto extends LinearOpMode{
                                 .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
                                 .addTemporalMarker(() -> claw.setPosition(CLAW_CLOSED)) // claw closed
                                 .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
-                                .addTemporalMarker(() -> slideDown()) // bring the lift down
+                                .addTemporalMarker(() -> slideDown(1)) // bring the lift down
                                 .back(33)
                                 .waitSeconds(0.1)
                                 .build();
@@ -547,7 +567,7 @@ public class EnigmaAuto extends LinearOpMode{
                                 .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
                                 .addTemporalMarker(() -> claw.setPosition(CLAW_CLOSED)) // claw closed
                                 .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
-                                .addTemporalMarker(() -> slideDown()) // bring the lift down
+                                .addTemporalMarker(() -> slideDown(1)) // bring the lift down
                                 .back(11)
                                 .waitSeconds(0.1)
                                 .build();
@@ -557,7 +577,7 @@ public class EnigmaAuto extends LinearOpMode{
                                 .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
                                 .addTemporalMarker(() -> claw.setPosition(CLAW_CLOSED)) // claw closed
                                 .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
-                                .addTemporalMarker(() -> slideDown()) // bring the lift down
+                                .addTemporalMarker(() -> slideDown(1)) // bring the lift down
                                 .forward(12)
                                 .waitSeconds(0.1)
                                 .build();
@@ -571,7 +591,7 @@ public class EnigmaAuto extends LinearOpMode{
                                 .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
                                 .addTemporalMarker(() -> claw.setPosition(CLAW_CLOSED)) // claw closed
                                 .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
-                                .addTemporalMarker(() -> slideDown()) // bring the lift down
+                                .addTemporalMarker(() -> slideDown(1)) // bring the lift down
                                 .forward(12)
                                 .waitSeconds(0.1)
                                 .build();
@@ -581,7 +601,7 @@ public class EnigmaAuto extends LinearOpMode{
                                 .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
                                 .addTemporalMarker(() -> claw.setPosition(CLAW_CLOSED)) // claw closed
                                 .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
-                                .addTemporalMarker(() -> slideDown()) // bring the lift down
+                                .addTemporalMarker(() -> slideDown(1)) // bring the lift down
                                 .back(11)
                                 .waitSeconds(0.1)
                                 .build();
@@ -591,7 +611,7 @@ public class EnigmaAuto extends LinearOpMode{
                                 .addTemporalMarker(() -> brake.setPosition(BRAKE_ON)) // lock turret
                                 .addTemporalMarker(() -> claw.setPosition(CLAW_CLOSED)) // claw closed
                                 .addTemporalMarker(() -> flipOut.setPosition(FLIPPED_IN)) // flip out claw linkage slide
-                                .addTemporalMarker(() -> slideDown()) // bring the lift down
+                                .addTemporalMarker(() -> slideDown(1)) // bring the lift down
                                 .back(33)
                                 .waitSeconds(0.1)
                                 .build();
@@ -611,7 +631,7 @@ public class EnigmaAuto extends LinearOpMode{
         telemetry.update();
         //Run the trajectory built for Auto and Parking
         drive.followTrajectorySequence(trajectoryAuto);
-        drive.followTrajectorySequence(trajectoryParking);
+        //drive.followTrajectorySequence(trajectoryParking);
 
 
     }
@@ -642,7 +662,12 @@ public class EnigmaAuto extends LinearOpMode{
         leftSlide.setPower(motorPower);
     }
 
-    public void slideDown(){
+    public void slideDown(int coneCount){
+        if (coneCount == 1) {
+            clawLinkage.setPosition(CLAW_LINKAGE_FIVE);
+        } else if (coneCount == 2) {
+            clawLinkage.setPosition(CLAW_LINKAGE_FOUR);
+            }
         leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
