@@ -63,7 +63,7 @@ public class EnigmaAuto extends LinearOpMode{
     private Servo odoRetractor;
     private Servo flipOut;
 
-    private static final double LEFT_AUTO_DISTANCE = 27.5;
+    private static final double LEFT_AUTO_DISTANCE = 25.5;
     private static final double LEFT_TURRET_DEGREES = 113;
     private static final double LEFT_TURRET_SPEED = 0.28;
     //private static final int LEFT_LIFT_HEIGHT = 340;
