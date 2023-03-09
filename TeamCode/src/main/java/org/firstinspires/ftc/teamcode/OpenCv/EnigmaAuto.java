@@ -62,10 +62,10 @@ public class EnigmaAuto extends LinearOpMode{
     // declare all of the servo and motor objects
     private Servo odoRetractor;
     private Servo flipOut;
-    private static final double LEFT_AUTO_DISTANCE = 27.3;
-    private static final double LEFT_TURRET_DEGREES = 109;
+    private static final double LEFT_AUTO_DISTANCE = 25.5;
+    private static final double LEFT_TURRET_DEGREES = 112.3;
     private static final double LEFT_TURRET_DEGREES_LAST_TWO = 107.5;
-    private static final double LEFT_TURRET_SPEED = 0.19;
+    private static final double LEFT_TURRET_SPEED = 0.185;
     //private static final int LEFT_LIFT_HEIGHT = 340;
     private static final double RIGHT_TURRET_DEGREES = 93;
     private static final double RIGHT_TURRET_SPEED = 0.18;
@@ -340,7 +340,7 @@ public class EnigmaAuto extends LinearOpMode{
         switch (startPosition) {
             case LEFT:
                 trajectoryAuto = drive.trajectorySequenceBuilder(startPose)
-                        .forward(40) // .forward(??) inches to medium junction
+                        .forward(39) // .forward(??) inches to medium junction
                         .UNSTABLE_addTemporalMarkerOffset(-.7, () -> brake.setPosition(BRAKE_ON))//  set brake on
                         .UNSTABLE_addTemporalMarkerOffset(-1, () -> lift(POWER_FULL, 400))//  lift up (motor power)
                         .UNSTABLE_addTemporalMarkerOffset(-.9, () -> flipOut.setPosition(FLIPPED_OUT))//  set mechanism to be flipped out
@@ -348,85 +348,85 @@ public class EnigmaAuto extends LinearOpMode{
                         .addTemporalMarker(() -> dropCone(0)) // drop the preloaded cone, enter a count for each one
                         .waitSeconds(0.1) // pause (??) microseconds
 
-                        .forward(11) // drive forward to line up with the cone stack
-                        .UNSTABLE_addTemporalMarkerOffset(-.4, () -> brake.setPosition(BRAKE_OFF))//  set brake off
+                        .forward(13.3) // drive forward to line up with the cone stack
+                        .UNSTABLE_addTemporalMarkerOffset(-.6, () -> brake.setPosition(BRAKE_OFF))//  set brake off
                         .UNSTABLE_addTemporalMarkerOffset(-.7, () -> turnTurret(0.45,(int) ticksToDegrees(95, Right)))// turn the turret to the rear of the robot facing the cone stack
                         .waitSeconds(0.1) // pause (??) microseconds
                         .addTemporalMarker(() -> slideDown()) // bring the lift down
                         .turn(Math.toRadians(-90)) // turn the robot so the rear is facing the cone stack
                         .waitSeconds(.1) // pause (??) microseconds
-                        .back(20.3) // drive backwards to the cone stack
+                        .back(20.5) // drive backwards to the cone stack
                         .UNSTABLE_addTemporalMarkerOffset(-1.3, () -> clawLinkage.setPosition(CLAW_LINKAGE_FIVE))//  lift up (motor power)
-                        .waitSeconds(.25) // pause (??) microseconds
+                        .waitSeconds(.2) // pause (??) microseconds
                         .addTemporalMarker(() -> pickCone(1)) // grab cone 1 off the stack
                         .waitSeconds(.2) // pause (??) microseconds
 
-                        .forward(LEFT_AUTO_DISTANCE) // drive backwards to the cone stack
+                        .forward(LEFT_AUTO_DISTANCE+1) // drive backwards to the cone stack
                         .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> turnTurret(LEFT_TURRET_SPEED,(int) ticksToDegrees(LEFT_TURRET_DEGREES, Left)))// turn the turret to the rear of the robot facing the cone stack
                         .UNSTABLE_addTemporalMarkerOffset(-1.35, () -> lift(POWER_FULL, 490))//  lift up (motor power)
-                        .waitSeconds(.15) // pause (??) a microseconds
+                        .waitSeconds(.1) // pause (??) a microseconds
                         .addTemporalMarker(() -> dropCone(1)) // drop cone 1
                         .addTemporalMarker(() -> clawLinkage.setPosition(CLAW_LINKAGE_TOP))
                         .waitSeconds(0.1) // pause (??) microseconds
 
-                        .back(LEFT_AUTO_DISTANCE)
+                        .back(LEFT_AUTO_DISTANCE+1)
                         .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> turnTurret(LEFT_TURRET_SPEED,(int) ticksToDegrees(LEFT_TURRET_DEGREES, Right)))
                         .UNSTABLE_addTemporalMarkerOffset(-.2, () -> clawLinkage.setPosition(CLAW_LINKAGE_FOUR))//  lift up (motor power)
                         .UNSTABLE_addTemporalMarkerOffset(-.8, () -> slideDown())// turn the turret to the rear of the robot facing the cone stack
-                        .waitSeconds(.25) // pause (??) microseconds
+                        .waitSeconds(.2) // pause (??) microseconds
                         .addTemporalMarker(() -> pickCone(2)) // grab cone 1 off the stack
                         .waitSeconds(.22) // pause (??) microseconds
 
-                        .forward(LEFT_AUTO_DISTANCE) // drive backwards to the cone stack
+                        .forward(LEFT_AUTO_DISTANCE+1) // drive backwards to the cone stack
                         .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> turnTurret(LEFT_TURRET_SPEED,(int) ticksToDegrees(LEFT_TURRET_DEGREES, Left)))// turn the turret to the rear of the robot facing the cone stack
                         .UNSTABLE_addTemporalMarkerOffset(-1.38, () -> lift(POWER_FULL, 495))//  lift up (motor power)
-                        .waitSeconds(.15) // pause (??) a microseconds
+                        .waitSeconds(.11) // pause (??) a microseconds
                         .addTemporalMarker(() -> dropCone(2)) // drop cone 1
                         .waitSeconds(0.1) // pause (??) microseconds
 
 
-                        .back(LEFT_AUTO_DISTANCE)
+                        .back(LEFT_AUTO_DISTANCE+1)
                         .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> turnTurret(LEFT_TURRET_SPEED,(int) ticksToDegrees(LEFT_TURRET_DEGREES, Right)))
                         .UNSTABLE_addTemporalMarkerOffset(-.2, () -> clawLinkage.setPosition(CLAW_LINKAGE_THREE))//  lift up (motor power)
                         .UNSTABLE_addTemporalMarkerOffset(-.8, () -> slideDown())// turn the turret to the rear of the robot facing the cone stack
-                        .waitSeconds(.25) // pause (??) microseconds
+                        .waitSeconds(.2) // pause (??) microseconds
                         .addTemporalMarker(() -> pickCone(3)) // grab cone 1 off the stack
                         .waitSeconds(.22) // pause (??) microseconds
 
-                        .forward(LEFT_AUTO_DISTANCE) // drive backwards to the cone stack
+                        .forward(LEFT_AUTO_DISTANCE+1.4) // drive backwards to the cone stack
                         .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> turnTurret(LEFT_TURRET_SPEED,(int) ticksToDegrees(LEFT_TURRET_DEGREES, Left)))// turn the turret to the rear of the robot facing the cone stack
                         .UNSTABLE_addTemporalMarkerOffset(-1.38, () -> lift(POWER_FULL, 495))//  lift up (motor power)
-                        .waitSeconds(.15) // pause (??) a microseconds
+                        .waitSeconds(.11) // pause (??) a microseconds
                         .addTemporalMarker(() -> dropCone(3)) // drop cone 1
                         .waitSeconds(0.1) // pause (??) microseconds
 
-                        .back(LEFT_AUTO_DISTANCE)
-                        .UNSTABLE_addTemporalMarkerOffset(-1.35, () -> turnTurret(LEFT_TURRET_SPEED,(int) ticksToDegrees(LEFT_TURRET_DEGREES_LAST_TWO, Right)))
+                        .back(LEFT_AUTO_DISTANCE+1.6)
+                        .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> turnTurret(LEFT_TURRET_SPEED,(int) ticksToDegrees(LEFT_TURRET_DEGREES, Right)))
                         .UNSTABLE_addTemporalMarkerOffset(-.2, () -> clawLinkage.setPosition(CLAW_LINKAGE_TWOTWO))//  lift up (motor power)
                         .UNSTABLE_addTemporalMarkerOffset(-.8, () -> slideDown())// turn the turret to the rear of the robot facing the cone stack
-                        .waitSeconds(.25) // pause (??) microseconds
+                        .waitSeconds(.2) // pause (??) microseconds
                         .addTemporalMarker(() -> pickCone(4)) // grab cone 1 off the stack
                         .waitSeconds(.22) // pause (??) microseconds
 
-                        .forward(LEFT_AUTO_DISTANCE) // drive backwards to the cone stack
+                        .forward(LEFT_AUTO_DISTANCE+1.6) // drive backwards to the cone stack
                         .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> turnTurret(LEFT_TURRET_SPEED,(int) ticksToDegrees(LEFT_TURRET_DEGREES, Left)))// turn the turret to the rear of the robot facing the cone stack
                         .UNSTABLE_addTemporalMarkerOffset(-1.38, () -> lift(POWER_FULL, 495))//  lift up (motor power)
-                        .waitSeconds(.15) // pause (??) a microseconds
+                        .waitSeconds(.11) // pause (??) a microseconds
                         .addTemporalMarker(() -> dropCone(4)) // drop cone 1
                         .waitSeconds(0.1) // pause (??) microseconds
 
-                        .back(LEFT_AUTO_DISTANCE)
-                        .UNSTABLE_addTemporalMarkerOffset(-1.35, () -> turnTurret(LEFT_TURRET_SPEED,(int) ticksToDegrees(LEFT_TURRET_DEGREES_LAST_TWO, Right)))
+                        .back(LEFT_AUTO_DISTANCE+1.7)
+                        .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> turnTurret(LEFT_TURRET_SPEED,(int) ticksToDegrees(LEFT_TURRET_DEGREES, Right)))
                         .UNSTABLE_addTemporalMarkerOffset(-.2, () -> clawLinkage.setPosition(CLAW_LINKAGE_ONEONE))//  lift up (motor power)
                         .UNSTABLE_addTemporalMarkerOffset(-.8, () -> slideDown())// turn the turret to the rear of the robot facing the cone stack
-                        .waitSeconds(.25) // pause (??) microseconds
+                        .waitSeconds(.2) // pause (??) microseconds
                         .addTemporalMarker(() -> pickCone(5)) // grab cone 1 off the stack
                         .waitSeconds(.22) // pause (??) microseconds
 
-                        .forward(LEFT_AUTO_DISTANCE) // drive backwards to the cone stack
-                        .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> turnTurret(LEFT_TURRET_SPEED,(int) ticksToDegrees(LEFT_TURRET_DEGREES, Left)))// turn the turret to the rear of the robot facing the cone stack
+                        .forward(LEFT_AUTO_DISTANCE+1.7) // drive backwards to the cone stack
+                        .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> turnTurret(LEFT_TURRET_SPEED,(int) ticksToDegrees(LEFT_TURRET_DEGREES+1, Left)))// turn the turret to the rear of the robot facing the cone stack
                         .UNSTABLE_addTemporalMarkerOffset(-1.38, () -> lift(POWER_FULL, 495))//  lift up (motor power)
-                        .waitSeconds(.15) // pause (??) a microseconds
+                        .waitSeconds(.1) // pause (??) a microseconds
                         .addTemporalMarker(() -> dropCone(5)) // drop cone 1
                         .waitSeconds(0.1) // pause (??) microseconds
                         .build(); // build trajectory
