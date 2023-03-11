@@ -348,7 +348,7 @@ public class EnigmaAuto extends LinearOpMode{
                         .addTemporalMarker(() -> dropCone(0)) // drop the preloaded cone, enter a count for each one
                         .waitSeconds(0.1) // pause (??) microseconds
 
-                        .forward(13.3) // drive forward to line up with the cone stack
+                        .forward(12.8) // drive forward to line up with the cone stack
                         .UNSTABLE_addTemporalMarkerOffset(-.6, () -> brake.setPosition(BRAKE_OFF))//  set brake off
                         .UNSTABLE_addTemporalMarkerOffset(-.7, () -> turnTurret(0.45,(int) ticksToDegrees(95, Right)))// turn the turret to the rear of the robot facing the cone stack
                         .waitSeconds(0.1) // pause (??) microseconds
@@ -370,15 +370,15 @@ public class EnigmaAuto extends LinearOpMode{
                         .waitSeconds(0.1) // pause (??) microseconds
 
                         .back(LEFT_AUTO_DISTANCE+1)
-                        .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> turnTurret(LEFT_TURRET_SPEED,(int) ticksToDegrees(LEFT_TURRET_DEGREES, Right)))
-                        .UNSTABLE_addTemporalMarkerOffset(-.2, () -> clawLinkage.setPosition(CLAW_LINKAGE_FOUR))//  lift up (motor power)
+                        .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> turnTurret(LEFT_TURRET_SPEED,(int) ticksToDegrees(LEFT_TURRET_DEGREES-4, Right)))
+                        .UNSTABLE_addTemporalMarkerOffset(-.09, () -> clawLinkage.setPosition(CLAW_LINKAGE_FOUR))//  lift up (motor power)
                         .UNSTABLE_addTemporalMarkerOffset(-.8, () -> slideDown())// turn the turret to the rear of the robot facing the cone stack
                         .waitSeconds(.2) // pause (??) microseconds
                         .addTemporalMarker(() -> pickCone(2)) // grab cone 1 off the stack
                         .waitSeconds(.22) // pause (??) microseconds
 
                         .forward(LEFT_AUTO_DISTANCE+1) // drive backwards to the cone stack
-                        .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> turnTurret(LEFT_TURRET_SPEED,(int) ticksToDegrees(LEFT_TURRET_DEGREES, Left)))// turn the turret to the rear of the robot facing the cone stack
+                        .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> turnTurret(LEFT_TURRET_SPEED,(int) ticksToDegrees(LEFT_TURRET_DEGREES-1, Left)))// turn the turret to the rear of the robot facing the cone stack
                         .UNSTABLE_addTemporalMarkerOffset(-1.38, () -> lift(POWER_FULL, 495))//  lift up (motor power)
                         .waitSeconds(.11) // pause (??) a microseconds
                         .addTemporalMarker(() -> dropCone(2)) // drop cone 1
@@ -386,8 +386,8 @@ public class EnigmaAuto extends LinearOpMode{
 
 
                         .back(LEFT_AUTO_DISTANCE+1)
-                        .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> turnTurret(LEFT_TURRET_SPEED,(int) ticksToDegrees(LEFT_TURRET_DEGREES, Right)))
-                        .UNSTABLE_addTemporalMarkerOffset(-.2, () -> clawLinkage.setPosition(CLAW_LINKAGE_THREE))//  lift up (motor power)
+                        .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> turnTurret(LEFT_TURRET_SPEED,(int) ticksToDegrees(LEFT_TURRET_DEGREES-4, Right)))
+                        .UNSTABLE_addTemporalMarkerOffset(-.1, () -> clawLinkage.setPosition(CLAW_LINKAGE_THREE))//  lift up (motor power)
                         .UNSTABLE_addTemporalMarkerOffset(-.8, () -> slideDown())// turn the turret to the rear of the robot facing the cone stack
                         .waitSeconds(.2) // pause (??) microseconds
                         .addTemporalMarker(() -> pickCone(3)) // grab cone 1 off the stack
@@ -400,8 +400,8 @@ public class EnigmaAuto extends LinearOpMode{
                         .addTemporalMarker(() -> dropCone(3)) // drop cone 1
                         .waitSeconds(0.1) // pause (??) microseconds
 
-                        .back(LEFT_AUTO_DISTANCE+1.6)
-                        .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> turnTurret(LEFT_TURRET_SPEED,(int) ticksToDegrees(LEFT_TURRET_DEGREES, Right)))
+                        .back(LEFT_AUTO_DISTANCE+1.8)
+                        .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> turnTurret(LEFT_TURRET_SPEED,(int) ticksToDegrees(LEFT_TURRET_DEGREES-4, Right)))
                         .UNSTABLE_addTemporalMarkerOffset(-.2, () -> clawLinkage.setPosition(CLAW_LINKAGE_TWOTWO))//  lift up (motor power)
                         .UNSTABLE_addTemporalMarkerOffset(-.8, () -> slideDown())// turn the turret to the rear of the robot facing the cone stack
                         .waitSeconds(.2) // pause (??) microseconds
@@ -416,7 +416,7 @@ public class EnigmaAuto extends LinearOpMode{
                         .waitSeconds(0.1) // pause (??) microseconds
 
                         .back(LEFT_AUTO_DISTANCE+1.7)
-                        .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> turnTurret(LEFT_TURRET_SPEED,(int) ticksToDegrees(LEFT_TURRET_DEGREES, Right)))
+                        .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> turnTurret(LEFT_TURRET_SPEED,(int) ticksToDegrees(LEFT_TURRET_DEGREES-4, Right)))
                         .UNSTABLE_addTemporalMarkerOffset(-.2, () -> clawLinkage.setPosition(CLAW_LINKAGE_ONEONE))//  lift up (motor power)
                         .UNSTABLE_addTemporalMarkerOffset(-.8, () -> slideDown())// turn the turret to the rear of the robot facing the cone stack
                         .waitSeconds(.2) // pause (??) microseconds
