@@ -292,7 +292,7 @@ public class OdoMec extends LinearOpMode {
 
             // Auto/Manual Claw
 
-            if (distance.getDistance(DistanceUnit.MM) < 40 && (!claw_pos || !gamepad2.y || gamepad2.right_trigger > 0) ) {
+            if (distance.getDistance(DistanceUnit.MM) < 50 && (!claw_pos || !gamepad2.y || gamepad2.right_trigger > 0) ) {
                 claw.setPosition(CLAW_CLOSED);
                 claw_pos = true;
             } else if (!gamepad2.right_bumper && gamepad2.y)  {  // Otherwise, stop the motor
